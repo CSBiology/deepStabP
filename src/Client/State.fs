@@ -2,13 +2,21 @@ module State
 
 open Shared
 
+type ComputationMode =
+| Legacy
+| IMLP
+
+type OrganismModel =
+| Plant
+| NonPlant
+
 type Model = {
-    Todos: Todo list;
-    Input: string
-}
+    HasJobRunning: bool
+} with
+    static member init = {
+        HasJobRunning = false
+    }
 
 type Msg =
-    | GotTodos of Todo list
-    | SetInput of string
-    | AddTodo
-    | AddedTodo of Todo
+    | SingleSequenceRequest             of ComputationMode
+    | FastaUploadRequest                of ComputationMode

@@ -5,11 +5,11 @@ open State
 open Update
 
 open Feliz
-open Feliz.Bulma
 
 let view (model: Model) (dispatch: Msg -> unit) =
     Html.div [
         Client.Components.Navbar.Navbar model dispatch
         Client.View.MainView.hero model dispatch
+        Client.View.InputView.View model.HasJobRunning dispatch
         Client.Components.Footer.footer
     ]

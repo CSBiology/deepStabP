@@ -16,7 +16,7 @@ type private NavbarState = {
 type private NavbarMsg =
 | Update_NavbarMenuActive of bool
 
-let private update (state:NavbarState) (msg:NavbarMsg)=
+let private update (state:NavbarState) (msg:NavbarMsg) =
     match msg with
     | Update_NavbarMenuActive (next) -> { state with NavbarMenuActive = next}
 
@@ -51,14 +51,14 @@ let Navbar (model : Model) (dispatch : Msg -> unit) =
                         //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = HowToUse then NoHelp else HowToUse) |> dispatch)]
                         //Navbar.Item.IsActive (currentDisp = HowToUse)
                     ] [
-                    str "How to use"
+                    str "Lorem"
                 ]
                 Navbar.Item.a
                     [
                         //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = InputFormat then NoHelp else InputFormat) |> dispatch)]
                         //Navbar.Item.IsActive (currentDisp = InputFormat)
                     ] [
-                    str "Input format"
+                    str "Ipsum"
 
                 ]
                 Navbar.Item.a
@@ -66,7 +66,7 @@ let Navbar (model : Model) (dispatch : Msg -> unit) =
                         //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = TechnicalScientificDetails then NoHelp else TechnicalScientificDetails) |> dispatch)]
                         //Navbar.Item.IsActive (currentDisp = TechnicalScientificDetails)
                     ] [
-                    str "Technical details"
+                    str "Dolor"
                 ]
             ]
             Navbar.End.div [] [
@@ -75,7 +75,7 @@ let Navbar (model : Model) (dispatch : Msg -> unit) =
                         //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = Contact then NoHelp else Contact) |> dispatch)]
                         //Navbar.Item.IsActive (currentDisp = Contact)
                     ] [
-                    str "Contact"
+                    str "Sit Amet"
                 ]
             ]
         ]

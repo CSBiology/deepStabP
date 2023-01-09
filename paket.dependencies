@@ -2,13 +2,14 @@ source https://api.nuget.org/v3/index.json
 framework: net6.0
 storage: none
 
+nuget Feliz.UseElmish 1.6.0
 nuget Fsharp.Core ~> 6
 nuget Fable.Remoting.Giraffe
 nuget Saturn
 nuget Expecto
 
 nuget Fable.Core
-nuget Fable.Elmish
+nuget Fable.Elmish 3.1
 nuget Fable.Elmish.React
 nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.HMR
