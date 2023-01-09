@@ -4,9 +4,11 @@ open Fable.React
 open Fable.React.Props
 open Fulma
 
+let FooterHeight = 56
+
 let footer =
     Footer.footer [
-        Props [Style [Position PositionOptions.Fixed; Bottom 0; Width "100%"]]
+        Props [Style [Position PositionOptions.Fixed; Bottom 0; Width "100%"; Height FooterHeight]]
     ] [
         Content.content [] [
             str "This service is developed and maintained by the "
