@@ -1,0 +1,449 @@
+body {
+    overflow-y: auto;
+    background-image: url(https://picsum.photos/200/300);
+    background: url("/Images/CircuitBrain.jpg");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-attachment: fixed;
+    background-position: center;
+    height: 100vh;
+}
+
+p.is-danger {
+    color: red;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.navbar.is-dark.csbNav {
+    background-color: rgb(68,84,106);
+}
+
+a.navbar-item.is-active {
+    background-color: rgb(222, 235, 247) !important;
+    color: rgb(68,84,106) !important;
+}
+
+.HelpSection {
+    background-color: rgb(222, 235, 247);
+    color: rgb(68,84,106);
+    width: 100%;
+    border: 1px solid;
+}
+
+.HelpSection .fas {
+    color: darkred;
+    cursor: pointer;
+}
+
+
+.hero.csbHero {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ed7d31+0,faee05+100 */
+    background: #ed7d31;
+    background: -moz-linear-gradient(-55deg, #ed7d31 0%, #fad505 80%);
+    background: -webkit-linear-gradient(-55deg, #ed7d31 0%,#fad505 100%);
+    background: linear-gradient(145deg, rgba(237, 125, 49, 0.9) 0%,rgba(250, 238, 5, 0.9) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ed7d31', endColorstr='#faee05',GradientType=1 );
+    text-align: justify;
+}
+
+.textarea {
+    border-color: rgb(237, 125, 49);
+}
+
+.is-danger-CSB {
+    background-color: rgb(250, 238, 5) !important
+}
+
+.startBtn {
+    min-height: 120px;
+}
+
+.section.csbSection {
+    background-color: rgb(222, 235, 247, 0.8);
+    opacity: 0.6;
+}
+
+.section.resultSection {
+    background: rgba(222,235,247,0.95);
+}
+
+.section.resultSection hr {
+    background: rgb(68,84,106)
+}
+
+.ProcessDecision {
+    /*background-color: #fafafa;*/
+
+    margin: 0 0 0 0;
+}
+
+.ProcessDecision:last-child {
+    margin-bottom: 0 !important;
+}
+
+.ProcessDecision .column {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.tile.csbTile {
+    border: 1px solid rgb(68,84,106);
+}
+
+.ResultFrame {
+    min-height: 800px;
+    min-width: 800px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.plot-container {
+    width: 50% !important;
+    margin: auto !important;
+}
+
+.transparent {
+    background-color: rgb(0,0,0,0.0);
+}
+
+.wordBreak {
+    word-wrap: break-word;
+}
+
+.viewManipulator {
+    display: flex;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold
+}
+
+.viewManipulator:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.viewManipulator div {
+    width: 100%;
+}
+
+
+.fastaDisplay span {
+    font-family: Consolas,monaco,monospace;
+    font-size: 1.25em;
+    line-height: 100%;
+    padding: 1px 0px 1px 1px;
+    font-weight: 1200;
+}
+
+.gradient-legend {
+    background: #faee05; /* Old browsers */
+    background: -moz-linear-gradient(left, #faee05 0%, #ed7d31 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, #faee05 0%,#ed7d31 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, #faee05 0%,#ed7d31 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#faee05', endColorstr='#ed7d31',GradientType=1 ); /* IE6-9 */
+    width: 20rem;
+    padding: 0.75rem;
+    display: inline-block;
+}
+
+.spacer {
+    width: 14rem;
+    padding: 0.75rem;
+    display: inline-block;
+}
+
+.leftSelector {
+    background-color: rgba(256, 256, 256, 1.0);
+
+    @supports (backdrop-filter: blur(3px)) or (--webkit-backdrop-filter: blur(3px)) {
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+        background-color: rgba(256, 256, 256, 0.85);
+    }
+
+    text-align: right;
+}
+
+.leftSelector .title {
+    color: rgb(237, 125, 49)
+}
+
+.leftSelector hr {
+    background-color: rgb(237, 125, 49)
+}
+
+.leftAlternative {
+    text-decoration: none
+}
+
+.leftAlternative:hover {
+    color: white;
+    background-color: rgb(68,84,106);
+}
+
+.rightSelector {
+    background-color: rgba(68,84,106, 0.95);
+
+    @supports (backdrop-filter: blur(3px)) or (--webkit-backdrop-filter: blur(3px)) {
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+        background-color: rgba(68,84,106, 0.85);
+    }
+
+    text-align: left;
+}
+
+.rightSelector .title {
+    color: rgb(237, 125, 49)
+}
+
+.rightSelector hr {
+    background-color: rgb(237, 125, 49)
+}
+
+.rightSelector .radio {
+    color: rgb(237, 125, 49);
+    font-size: 1.25rem;
+}
+
+.fastaFileUploadBtn {
+    border: 1px solid rgb(237, 125, 49);
+    background-color: rgb(256, 256, 256);
+    color: rgb(237, 125, 49)
+}
+
+.fastaFileUploadBtn .title {
+    color: rgb(237, 125, 49);
+}
+
+.file-label:hover .file-cta {
+    background-color: rgb(237, 125, 49);
+    color: white;
+}
+
+.file-label:hover .title {
+    color: rgb(222, 235, 247);
+}
+
+#ResultHeading {
+    background: rgba(222,235,247,0.95);
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+}
+
+#ResultHeading .column {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+#ResultHeading .title {
+    color: rgb(68,84,106);
+}
+
+#ResultHeading .pagination-link {
+    color: rgb(68,84,106);
+    border-color: rgb(68,84,106);
+    background-color: rgb(237, 125, 49);
+}
+
+#ResultHeading .pagination-link.is-current {
+    border-color: rgb(237, 125, 49);
+    background-color: rgb(68,84,106);
+    color: rgb(237, 125, 49);
+}
+
+#ResultHeading hr {
+    background-color: rgb(68,84,106);
+}
+
+.leftResultHeading {
+    text-align: right;
+}
+
+.resultBar {
+    background: #ed7d31;
+    background: -moz-linear-gradient(-55deg, #ed7d31 0%, #fad505 80%);
+    background: -webkit-linear-gradient(-55deg, #ed7d31 0%,#fad505 100%);
+    background: linear-gradient(145deg, rgba(237, 125, 49, 1.0) 0%,rgba(250, 238, 5, 1.0) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ed7d31', endColorstr='#faee05',GradientType=1 );
+    margin-bottom: 0 !important;
+    position: fixed;
+    bottom: 0px;
+    z-index: 29;
+    width: 100%;
+}
+
+.resultBar .column {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.resultBar.title, .resultBar .pagination-link {
+    color: rgb(68,84,106);
+}
+
+.resultBar .pagination-link {
+    border-color: rgb(68,84,106);
+    background-color: rgb(237, 125, 49);
+}
+
+.resultBar .pagination-link.is-current {
+    border-color: rgb(237, 125, 49);
+    background-color: rgb(68,84,106);
+    color: rgb(237, 125, 49);
+}
+
+.resultBar hr {
+    background-color: rgb(68,84,106);
+}
+
+.leftResultBar {
+    text-align: right;
+}
+
+a[download] {
+    font-size: 1.5em;
+    background-color: #22c65b;
+    border-color: transparent;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+}
+
+a[download]::before {
+    height: 1em;
+    position: relative;
+    top: 0.75em;
+    right: 0.5em;
+    width: 1em;
+}
+
+a[download]:hover,
+a[download]:focus {
+    text-decoration: none;
+}
+
+#prepareDownload {
+    font-size: 1.5em;
+    line-height: 100%;
+}
+
+.card-footer-item {
+    font-size: 1.5em;
+    line-height: 100%;
+}
+
+
+.is-selected-model {
+    border: 2px solid green;
+}
+
+.ErrorSection {
+    background-color: rgba( 240, 128, 128, 0.7);
+}
+
+.ErrorSection h1 {
+    color: red
+}
+
+.resetBtn {
+    width: 100%;
+    min-height: 7rem;
+    font-size: 3rem;
+}
+
+.plotModeBtnActive {
+    border-color: rgb(237, 125, 49);
+    background-color: rgb(68,84,106);
+    color: rgb(237, 125, 49);
+}
+
+.plotModeBtnActive:focus {
+    border-color: rgb(237, 125, 49) !important;
+    background-color: rgb(68,84,106) !important;
+    color: rgb(237, 125, 49) !important;
+}
+
+.plotModeBtnInactive {
+    border: none;
+    background-color: whitesmoke !important;
+    color: rgb(68,84,106) !important;
+}
+
+.plotModeBtnInactive:hover {
+    border: 1px solid rgb(68,84,106) !important;
+    background-color: rgb(222, 235, 247) !important;
+    color: rgb(68,84,106) !important;
+}
+
+.footer-left {
+    background-color: rgba(68,84,106, 0.95);
+    text-align: right;
+    padding-right: 4rem;
+    color: white;
+
+    @supports (backdrop-filter: blur(3px)) or (--webkit-backdrop-filter: blur(3px)) {
+        background-color: rgba(68,84,106, 0.85);
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+    }
+}
+
+.footer-right {
+    text-align: left;
+    padding-left: 4rem;
+    background-color: rgba(256, 256, 256, 1.0);
+    color: black;
+
+    @supports (backdrop-filter: blur(3px)) or (--webkit-backdrop-filter: blur(3px)) {
+        background-color: rgba(256, 256, 256, 0.85);
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+    }
+}
+
+.footer-left a {
+    text-decoration: none;
+    color: white
+}
+
+.footer-left a:hover {
+    cursor: pointer;
+    color: #ed7d31;
+    font-weight: bold
+}
+
+.footer-right a {
+    text-decoration: none;
+    color: rgb(68,84,106)
+}
+
+.footer-right a:hover {
+    cursor: pointer;
+    color: #ed7d31;
+    font-weight: bold
+}
+
+.csbFooter {
+    /*background-color: #fafafa;*/
+    margin: 0 0 0 0;
+}
+
+.csbFooter:last-child {
+    margin-bottom: 0 !important;
+}
+
+.csbFooter .column {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.footerSection {
+    padding: 0rem;
+}
+
+.footer {
+    padding: 1rem !important;
+    text-align: center
+}

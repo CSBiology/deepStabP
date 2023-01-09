@@ -13,10 +13,10 @@ type private NavbarState = {
         NavbarMenuActive = false
     }
 
-type private Msg =
+type private NavbarMsg =
 | Update_NavbarMenuActive of bool
 
-let private update (state:NavbarState) (msg:Msg)=
+let private update (state:NavbarState) (msg:NavbarMsg)=
     match msg with
     | Update_NavbarMenuActive (next) -> { state with NavbarMenuActive = next}
 
@@ -26,7 +26,7 @@ let Navbar (model : Model) (dispatch : Msg -> unit) =
 
     //let currentDisp = model.InformationSectionDisplay
     Navbar.navbar [Navbar.IsFixedTop; Navbar.CustomClass "is-dark csbNav"; Navbar.Props [Props.Role "navigation"; AriaLabel "main navigation" ]] [
-        Navbar.Brand.a [] [
+        Navbar.Brand.div [] [
             Navbar.Item.a [Navbar.Item.Props [Props.Href "https://csb.bio.uni-kl.de/"]] [
                 img [Props.Src "../Images/Logo.png"]
             ]

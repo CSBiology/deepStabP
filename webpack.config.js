@@ -118,10 +118,17 @@ module.exports = function(env, arg) {
                         isProduction
                             ? MiniCssExtractPlugin.loader
                             : 'style-loader',
-                        'css-loader',
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                url: false
+                            },
+                        },
                         {
                             loader: 'sass-loader',
-                            options: { implementation: require('sass') }
+                            options: {
+                                implementation: require('sass'),
+                            }
                         }
                     ],
                 },
