@@ -10,6 +10,7 @@
         <None Include="paket.references" />
         <Compile Include="Api.fs" />
         <Compile Include="State.fs" />
+        <Compile Include="View\Components\Footer.fs" />
         <Compile Include="View\Components\Navbar.fs" />
         <Compile Include="View\MainView.fs" />
         <Compile Include="Update.fs" />
