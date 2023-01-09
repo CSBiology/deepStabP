@@ -1,4 +1,4 @@
-module Client.View.Navbar
+module Client.Components.Navbar
 
 open State
 open Fable.React
