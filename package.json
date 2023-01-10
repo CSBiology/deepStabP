@@ -2,7 +2,7 @@
     "private": true,
     "engines": {
         "node": "~16 || ~18",
-        "npm": "~9"
+        "npm": "~8 || ~9"
     },
     "scripts": {
         "start": "webpack-dev-server --mode development",
@@ -10,10 +10,8 @@
         "test:live": "webpack-dev-server --mode development --env test"
     },
     "dependencies": {
-        "bulma": "^0.9.4",
         "react": "^17.0.2",
-        "react-dom": "^17.0.2",
-        "use-sync-external-store": "^1.2.0"
+        "react-dom": "^17.0.2"
     },
     "devDependencies": {
         "copy-webpack-plugin": "^10.0.0",

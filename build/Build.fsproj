@@ -5,11 +5,17 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="Dockerfile.Api" />
+    <None Include="Dockerfile.Api.dockerignore" />
+    <None Include="Dockerfile.UI" />
+    <None Include="Dockerfile.UI.dockerignore" />
     <Compile Include="ProjectInfo.fs" />
     <Compile Include="Helpers.fs" />
+    <Compile Include="DockerTasks.fs" />
     <Compile Include="ReleaseNotesTasks.fs" />
     <Compile Include="Build.fs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
       <PackageReference Include="BlackFox.Fake.BuildTask" Version="0.1.3" />
       <PackageReference Include="Fake.Core.Target" Version="5.23.1" />

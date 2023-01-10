@@ -8,6 +8,8 @@ open Helpers
 initializeContext()
 
 let _ = ReleaseNotesTasks.updateReleaseNotes
+let _ = DockerTasks.dockerBundle
+let _ = DockerTasks.dockerTest
 
 Target.create "Clean" (fun _ ->
     Shell.cleanDir deployPath
@@ -15,6 +17,12 @@ Target.create "Clean" (fun _ ->
 )
 
 Target.create "InstallClient" (fun _ -> run npm "install" ".")
+
+Target.create "InstallApi" (fun _ -> run pip "install --no-cache-dir --upgrade --user -r requirements.txt" "./src/Api")
+
+//Target.create "RunApi" (fun _ ->
+//    run uvicorn "src.Api.app.main:app --reload" ""
+//)
 
 Target.create "Bundle" (fun _ ->
     [ "server", dotnet $"publish -c Release -o \"{deployPath}\"" serverPath
@@ -25,6 +33,7 @@ Target.create "Bundle" (fun _ ->
 Target.create "Run" (fun _ ->
     run dotnet "build" sharedPath
     [ "server", dotnet "watch run" serverPath
+      "api", uvicorn "src.Api.app.main:app --reload" ""
       "client", dotnet "fable watch -o output -s --run npm run start" clientPath ]
     |> runParallel
 )
@@ -49,6 +58,7 @@ let dependencies = [
 
     "Clean"
         ==> "InstallClient"
+        ==> "InstallApi"
         ==> "Run"
 
     "InstallClient"

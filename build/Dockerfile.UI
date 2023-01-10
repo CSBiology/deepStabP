@@ -1,0 +1,20 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
+
+# Install node
+# node_18 will not work because some lazyView2 function from fable is not supported anymore. (see console)
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash
+RUN apt-get update && apt-get install -y nodejs
+
+WORKDIR /workspace
+COPY ../. .
+RUN dotnet tool restore
+RUN npm install
+RUN dotnet fable src/Client -o src/Client/output -e .fs.js -s --run webpack --mode production
+RUN cd src/Server && dotnet publish -c release -o ../../deploy
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
+
+COPY --from=build /workspace/deploy /app
+WORKDIR /app
+EXPOSE 5000
+ENTRYPOINT [ "dotnet", "Server.dll" ]

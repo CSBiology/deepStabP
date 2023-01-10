@@ -8,6 +8,7 @@ You'll need to install the following pre-requisites in order to build SAFE appli
 
 * [.NET Core SDK](https://www.microsoft.com/net/download) 6.0 or higher
 * [Node 16](https://nodejs.org/en/download/)
+* [Python 3.9](https://www.python.org/downloads/release/python-3916/) (used for ml api)
 
 ## Starting the application
 
@@ -20,7 +21,7 @@ dotnet tool restore
 To concurrently run the server and the client components in watch mode use the following command:
 
 ```bash
-dotnet run
+/build.cmd
 ```
 
 Then open `http://localhost:8080` in your browser.

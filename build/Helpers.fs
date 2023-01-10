@@ -84,6 +84,28 @@ let npm =
 
     createProcess npmPath
 
+let pip =
+    let pipPath =
+        match ProcessUtils.tryFindFileOnPath "pip" with
+        | Some path -> path
+        | None ->
+            "pip was not found in path. Please install it and make sure it's available from your path. "
+            |> failwith
+
+    createProcess pipPath
+
+let uvicorn = createProcess "uvicorn"
+
+let docker =
+    let path =
+        match ProcessUtils.tryFindFileOnPath "docker" with
+        | Some path -> path
+        | None ->
+            "docker was not found in path. Please install it and make sure it's available from your path. "
+            |> failwith
+
+    createProcess path
+
 ///Choose process to open plots with depending on OS. Thanks to @zyzhu for hinting at a solution (https://github.com/plotly/Plotly.NET/issues/31)
 let openBrowser url =
     if RuntimeInformation.IsOSPlatform(OSPlatform.Windows) then
@@ -112,7 +134,7 @@ let runOrDefault args =
         | [| target |] -> Target.runOrDefault target
         | arr when args.Length > 1 ->
             Target.run 0 (Array.head arr) ( Array.tail arr |> List.ofArray )
-        | _ -> Target.runOrDefault "Ignore" 
+        | _ -> Target.runOrDefault "Run" 
         0
     with e ->
         printfn "%A" e
