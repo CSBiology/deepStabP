@@ -6,44 +6,22 @@ open Saturn
 
 open Shared
 
-module Storage =
-    let todos = ResizeArray()
+let serviceApi = {
+    getVersion = fun () -> async {return "0.1.0"}
+}
 
-    let addTodo (todo: Todo) =
-        if Todo.isValid todo.Description then
-            todos.Add todo
-            Ok()
-        else
-            Error "Invalid todo"
-
-    do
-        addTodo (Todo.create "Create new SAFE project")
-        |> ignore
-
-        addTodo (Todo.create "Write your app") |> ignore
-        addTodo (Todo.create "Ship it !!!") |> ignore
-
-let todosApi =
-    { getTodos = fun () -> async { return Storage.todos |> List.ofSeq }
-      addTodo =
-        fun todo ->
-            async {
-                return
-                    match Storage.addTodo todo with
-                    | Ok () -> todo
-                    | Error e -> failwith e
-            } }
-
-let webApp =
+let webApp_service =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.fromValue todosApi
+    |> Remoting.fromValue serviceApi
     |> Remoting.buildHttpHandler
+
+
 
 let app =
     application {
         url "http://0.0.0.0:5000"
-        use_router webApp
+        use_router webApp_service
         memory_cache
         use_static "public"
         use_gzip

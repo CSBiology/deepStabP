@@ -3,7 +3,7 @@ module Api
 open Fable.Remoting.Client
 open Shared
 
-let todosApi =
+let serviceApi =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<ITodosApi>
+    |> Remoting.buildProxy<IServiceApi>

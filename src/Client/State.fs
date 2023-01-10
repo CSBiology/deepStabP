@@ -11,12 +11,16 @@ type OrganismModel =
 | NonPlant
 
 type Model = {
-    HasJobRunning: bool
+    AppVersion      : string
+    HasJobRunning   : bool
 } with
     static member init = {
-        HasJobRunning = false
+        HasJobRunning   = false
+        AppVersion      = ""
     }
 
 type Msg =
+    | GetVersionRequest
+    | GetVersionResponse                of string
     | SingleSequenceRequest             of ComputationMode
     | FastaUploadRequest                of ComputationMode

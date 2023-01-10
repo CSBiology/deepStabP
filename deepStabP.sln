@@ -33,6 +33,17 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Client.Tests", "tests\Clien
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Build", "build\Build.fsproj", "{1D56431C-0AEB-42E3-BE50-6FE62F9419B5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{BD8D11FE-E046-41B1-A154-951A0AA8242C}"
+	ProjectSection(SolutionItems) = preProject
+		src\Api\README.md = src\Api\README.md
+		src\Api\requirements.txt = src\Api\requirements.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{5177416D-117D-4540-ADB8-49D4CC154A4C}"
+	ProjectSection(SolutionItems) = preProject
+		src\Api\app\main.py = src\Api\app\main.py
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,6 +149,8 @@ Global
 		{87197987-1524-4E8A-A7CB-4440BD22A395} = {3820D9E8-1B4E-486E-9C46-D52E3784D222}
 		{9ADB89B5-54DA-4F25-B2D0-013A7FCEFABA} = {3820D9E8-1B4E-486E-9C46-D52E3784D222}
 		{CF8C20AC-1FC4-4114-ACB8-6CE6E51F34F9} = {3820D9E8-1B4E-486E-9C46-D52E3784D222}
+		{BD8D11FE-E046-41B1-A154-951A0AA8242C} = {F84DCF8A-FC1A-4677-AF4D-616AD7DB3470}
+		{5177416D-117D-4540-ADB8-49D4CC154A4C} = {BD8D11FE-E046-41B1-A154-951A0AA8242C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DBBB1FED-BC19-4048-9EB7-A3BC02B6A3B4}
