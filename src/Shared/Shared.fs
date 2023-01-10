@@ -9,3 +9,12 @@ module Route =
 type IServiceApi = {
     getVersion: unit -> Async<string>
 }
+
+
+type HelloWorld = {
+    Hello: string
+}
+
+type IDeepStabPApi = {
+    helloWorld: unit -> Async<HelloWorld>
+}

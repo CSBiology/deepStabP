@@ -3,12 +3,47 @@ module Server
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 open Saturn
-
+open Giraffe
 open Shared
 
 let serviceApi = {
     getVersion = fun () -> async {return "0.1.0"}
 }
+
+module DeepStabP =
+    open Giraffe
+    open Microsoft.AspNetCore.Http
+    open System.Net.Http
+    open Newtonsoft.Json
+
+    let mutable DeepStabP_url = "http://localhost:8000"
+
+    let httpClient = new HttpClient()
+    httpClient.BaseAddress <- System.Uri(DeepStabP_url)
+
+    // https://www.newtonsoft.com/json
+    // https://stackoverflow.com/questions/42000362/creating-a-proxy-to-another-web-api-with-asp-net-core
+
+    let testHandler  =
+        task {
+            let! world = httpClient.GetAsync("/")
+            let! content = world.Content.ReadAsStringAsync()
+            let r = JsonConvert.DeserializeObject<HelloWorld>(content)
+            return r
+        }
+        |> Async.AwaitTask
+
+
+let deepStabPApi : IDeepStabPApi = {
+    helloWorld = fun () -> DeepStabP.testHandler
+}
+
+
+let webApp_deepStabp =
+    Remoting.createApi ()
+    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.fromValue deepStabPApi
+    |> Remoting.buildHttpHandler
 
 let webApp_service =
     Remoting.createApi ()
@@ -16,12 +51,15 @@ let webApp_service =
     |> Remoting.fromValue serviceApi
     |> Remoting.buildHttpHandler
 
-
+let browserRouter = choose [
+    webApp_service
+    webApp_deepStabp
+]
 
 let app =
     application {
         url "http://0.0.0.0:5000"
-        use_router webApp_service
+        use_router browserRouter
         memory_cache
         use_static "public"
         use_gzip
