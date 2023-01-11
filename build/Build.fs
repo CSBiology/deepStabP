@@ -33,8 +33,9 @@ Target.create "Bundle" (fun _ ->
 Target.create "Run" (fun _ ->
     run dotnet "build" sharedPath
     [ "server", dotnet "watch run" serverPath
-      "api", uvicorn "src.Api.app.main:app --reload" ""
-      "client", dotnet "fable watch -o output -s --run npm run start" clientPath ]
+      "client", dotnet "fable watch -o output -s --run npm run start" clientPath
+      "api", uvicorn "app.main:app --reload" "src/Api"
+    ]
     |> runParallel
 )
 

@@ -35,6 +35,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 # So, it's important to put this near the end of the Dockerfile, to optimize the container image build times.
 COPY ./src/Api/app /code/app
 
+COPY ./src/Api/trained_model /code/trained_model
 
 # Set the command to run the uvicorn server.
 
