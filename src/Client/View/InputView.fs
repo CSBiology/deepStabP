@@ -40,6 +40,7 @@ module private State =
 
     type InputMsg =
     | Reset
+    | RemoveFasta
     | UpdateSeqMode                 of SeqMode option
     | UpdateMT_Mode                 of MT_Mode
     | UpdateGrowthTemp              of float
@@ -81,6 +82,8 @@ module private Update =
     let update (msg: InputMsg) (state:InputState) =
         match msg with
         | Reset -> init()
+        | RemoveFasta ->
+            {state with FastaFileName = ""; FastaFileData = ""; HasValidFasta = false}, Cmd.none
         | UpdateSeqMode (mode) ->
             { state with SeqMode = mode}, Cmd.none
         | UpdateMT_Mode mode ->
@@ -180,7 +183,6 @@ module private UploadHandler =
 
 let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
     Field.div [
-        
         Field.Props [
             Id UploadHandler.id
             OnDragEnter(fun e ->
@@ -210,7 +212,7 @@ let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
             ] []
         | Some Fasta ->
             File.file [File.IsBoxed;File.IsFullWidth;File.HasName] [
-                File.Label.label [] [
+                File.Label.label [ ] [
                     File.input [ Props [
                         OnChange <| UploadHandler.onchange setState
                     ]]
@@ -218,7 +220,27 @@ let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
                         Heading.h4 [] [str "Click to choose a file"]
                         File.icon [] [Html.i [ prop.className "fa fa-upload"]]
                     ]
-                    if state.FastaFileName <> "" then File.name [Modifiers [Modifier.TextAlignment (Screen.All, TextAlignment.Centered)]] [str state.FastaFileName]
+                    if state.FastaFileName <> "" then
+                        File.name [Modifiers [Modifier.TextAlignment (Screen.All, TextAlignment.Centered)]] [
+                            str state.FastaFileName
+                            Button.span [
+                                Button.OnClick (fun e ->
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    RemoveFasta |> setState
+                                )
+                                Button.Size IsSmall
+                                Button.IsOutlined
+                                Button.Color Color.IsDanger
+                                Button.Props [Style [
+                                    Float FloatOptions.Right
+                                    TextAlign TextAlignOptions.Center
+                                    Cursor "hover"
+                                ]]
+                            ] [
+                                Html.i [ prop.className "fa-solid fa-x"]
+                            ]
+                        ]
                 ]
             ]
     ]

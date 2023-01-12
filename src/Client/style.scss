@@ -241,10 +241,19 @@ a.navbar-item.is-active {
 
 .file-label:hover .file-cta {
     background-color: $csb-orange;
-    color: white;
+    color: white ;
+}
+
+.file-label .file-cta {
+    background-color: $csb-orange;
+    color: white !important;
 }
 
 .file-label:hover .title {
+    color: $csb-smokewhite;
+}
+
+.file-label .title {
     color: $csb-smokewhite;
 }
 
