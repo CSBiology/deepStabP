@@ -2,10 +2,6 @@ module State
 
 open Shared
 
-type ComputationMode =
-| Legacy
-| IMLP
-
 type OrganismModel =
 | Plant
 | NonPlant
@@ -33,5 +29,5 @@ type Msg =
     | GetVersionUIResponse              of string
     | GetVersionApiRequest
     | GetVersionApiResponse             of string
-    | SingleSequenceRequest             of ComputationMode
-    | FastaUploadRequest                of ComputationMode
+    | PredictionRequest                 of DeepStabP.Types.PredictorInfo
+    | PredictionResponse                of Result<DeepStabP.Types.PredictorResponse [],exn>

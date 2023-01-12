@@ -7,12 +7,27 @@ type MT_Mode =
 | Lysate = 0
 | Cell = 1
 
+// Use this module to hold functions for MT_Mode as Enumerables cannot have members
+module MT_Mode =
+
+    let toString (mode:MT_Mode) =
+        match mode with
+        | MT_Mode.Lysate    -> "Lysate"
+        | MT_Mode.Cell      -> "Cell"
+        | anythingElse      -> failwith $"MT_Mode Enumerable {anythingElse} not recognized."
+        
+
 // mirrored in api main.py
 type PredictorInfo = {
-    growth_temp: int
+    growth_temp: float
     mt_mode: MT_Mode
     fasta: string
-}
+} with
+    static member create gtemp mtMode fasta = {
+        growth_temp = gtemp
+        mt_mode = mtMode
+        fasta = fasta
+    }
 
 type PredictorResponse = {
     Protein     : string

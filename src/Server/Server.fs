@@ -5,16 +5,17 @@ open Fable.Remoting.Giraffe
 open Saturn
 open Giraffe
 open Shared
-open Api
 
 let serviceApi = {
-    getVersion = fun () -> async {return "0.1.0"}
+    getVersion = fun () -> async {
+        return "0.1.0"
+    }
 }
 
 let deepStabPApi : IDeepStabPApi = {
-    helloWorld = fun () -> DeepStabP.helloWorldHandler()
-    getVersion = fun () -> DeepStabP.getVersionHandler()
-    predict = fun info -> DeepStabP.postPredictHandler info
+    helloWorld = fun () -> DeepStabP.Api.helloWorldHandler()
+    getVersion = fun () -> DeepStabP.Api.getVersionHandler()
+    predict = fun info -> DeepStabP.Api.postPredictHandler info
 }
 
 let webApp_deepStabp =

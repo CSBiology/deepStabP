@@ -36,5 +36,22 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | GetVersionApiResponse api_version ->
         let nextModel = {model with Version = {model.Version with Api = api_version}}
         nextModel, Cmd.none
-    | SingleSequenceRequest tst -> model, Cmd.none
-    | FastaUploadRequest tst -> model, Cmd.none
+    | PredictionRequest info ->
+        let nextModel = {
+            model with HasJobRunning = true
+        }
+        let cmd =
+            Cmd.OfAsync.either
+                Api.deepStabPApi.predict
+                info
+                (Ok >> PredictionResponse)
+                (Error >> PredictionResponse)
+        nextModel, cmd
+    | PredictionResponse (Ok response) ->
+        let nextModel = { model with HasJobRunning = false }
+        Browser.Dom.window.alert (response)
+        nextModel, Cmd.none
+    | PredictionResponse (Error e) ->
+        let nextModel = { model with HasJobRunning = false }
+        Browser.Dom.window.alert (e)
+        nextModel, Cmd.none

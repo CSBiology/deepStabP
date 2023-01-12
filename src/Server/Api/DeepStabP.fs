@@ -1,4 +1,4 @@
-module Api.DeepStabP
+module DeepStabP.Api
 
 open System.Net.Http
 open Newtonsoft.Json
