@@ -9,7 +9,7 @@ open State
 let HeaderTextColor = "has-text-white-ter" //"has-text-black" //"has-text-white-ter"
 
 let hero (model : Model) (dispatch : Msg -> unit) =
-    Hero.hero [Hero.IsMedium; Hero.CustomClass "csbHero"] [
+    Hero.hero [Hero.CustomClass "csbHero"] [
         Hero.body [] [
             Container.container [ ] [
                 Heading.h1 [Heading.IsSpaced; Heading.CustomClass HeaderTextColor] [

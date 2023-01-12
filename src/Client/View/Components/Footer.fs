@@ -7,7 +7,7 @@ open Feliz
 
 let footer (versions: State.Versions) =
     Footer.footer [
-        Props [Style [Position PositionOptions.Relative; Bottom 0; Width "100%";]]
+        Props [Style [Width "100%";]]
     ] [
         Content.content [
             Content.Modifiers [Modifier.TextSize (Screen.All, TextSize.Is7)]

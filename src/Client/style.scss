@@ -63,6 +63,7 @@ a.navbar-item.is-active {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e6006b6b', endColorstr='#e6eb2849',GradientType=1 ); /* IE6-9 */
 
     text-align: justify;
+    padding: 2rem;
 }
 
 
@@ -183,6 +184,7 @@ a.navbar-item.is-active {
     }
 
     text-align: right;
+
 }
 
 .leftSelector .title {
@@ -464,6 +466,6 @@ a[download]:focus {
 }
 
 .footer {
-    padding: 1rem !important;
+    padding: .5rem !important;
     text-align: center
 }

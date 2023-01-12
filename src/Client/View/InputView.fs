@@ -21,7 +21,6 @@ type private InputState = {
     FastaFileInputName  : string
     FastaFileInput      : string []
     InvalidFastaChars   : char list
-    EULAAccepted        : bool
     ComputationMode     : State.ComputationMode
     OrganismModel       : OrganismModel
 } with
@@ -32,7 +31,6 @@ type private InputState = {
         FastaFileInputName  = ""
         FastaFileInput      = Array.empty
         InvalidFastaChars   = List.empty
-        EULAAccepted        = false
         ComputationMode     = ComputationMode.IMLP
         OrganismModel       = NonPlant
     }
@@ -122,10 +120,7 @@ let private validateInputState (state:InputState) =
         | _ ->
             match state.HasValidFasta with
             | false -> false, "Fasta is invalid"
-            | _ ->  if state.EULAAccepted then
-                        true, "Start legacy computation"
-                    else
-                        true, "Start computation"
+            | _ -> true, "Start computation"
     | Some Fasta -> 
         printfn "Fasta" 
         match state.FastaFileInput with
@@ -135,147 +130,115 @@ let private validateInputState (state:InputState) =
         | _ ->
             match state.HasValidFasta with
             | false -> false, "Fasta is invalid"
-            | _ ->  if state.EULAAccepted then
-                        true, "Start legacy computation"
-                    else
-                        true, "Start computation"
+            | _ -> true, "Start computation"
     | None ->
         printfn "None"
         false, "No data provided"
 
 let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
-    match state.SeqMode with
-    | Some Single | None ->
-        Textarea.textarea [
-            Textarea.Size Size.IsMedium   
-            Textarea.Placeholder "insert a single amino acid sequence in FASTA format (with or without header)"
-            Textarea.OnChange (fun e ->
-                let sequence = e.Value//!!e.target?value
-                SingleSequenceInput_Handler sequence |> setState
-            )
-        ] []
-    | Some Fasta ->
-        File.file [File.IsBoxed;File.IsFullWidth;File.HasName] [
-            File.Label.label [] [
-                JsInterop.FileReader.singleFileInput [
-                    Props.Hidden true
-                    JsInterop.FileReader.FileInputHelper.React.OnTextReceived(fun x -> FastaUpload_Handler (x.Data,x.Name) |> setState)
-                ] 
-                File.cta [Props [Class "file-cta fastaFileUploadBtn"]] [
-                    Heading.h4 [] [str "Click to choose a file"]
-                    Icon.icon [] [Html.i [ prop.className "fa fa-upload"]]
+    Field.div [] [
+        match state.SeqMode with
+        | Some Single | None ->
+            Textarea.textarea [
+                Textarea.Size Size.IsMedium   
+                Textarea.Placeholder "insert a single amino acid sequence in FASTA format (with or without header)"
+                Textarea.OnChange (fun e ->
+                    let sequence = e.Value//!!e.target?value
+                    SingleSequenceInput_Handler sequence |> setState
+                )
+            ] []
+        | Some Fasta ->
+            File.file [File.IsBoxed;File.IsFullWidth;File.HasName] [
+                File.Label.label [] [
+                    JsInterop.FileReader.singleFileInput [
+                        Props.Hidden true
+                        JsInterop.FileReader.FileInputHelper.React.OnTextReceived(fun x -> FastaUpload_Handler (x.Data,x.Name) |> setState)
+                    ] 
+                    File.cta [CustomClass "fastaFileUploadBtn"] [
+                        Heading.h4 [] [str "Click to choose a file"]
+                        File.icon [] [Html.i [ prop.className "fa fa-upload"]]
+                    ]
+                    if state.FastaFileInputName <> "" then File.name [] [str state.FastaFileInputName]
                 ]
-                File.name [] [str state.FastaFileInputName]
             ]
-        ]
+    ]
 
 open Feliz.UseElmish
+
+let private inputLeft (isValidState:bool) (state: InputState) (setState: InputMsg -> unit) =
+
+    let leftHeader,leftAlternative =
+        match state.SeqMode with 
+        | Some Single | None -> "Or upload a ", "file"
+        | Some Fasta -> "Or insert a single amino acid ", "sequence"
+
+    Column.column [Column.Width (Screen.Desktop, Column.Is7);Column.CustomClass "leftSelector"] [
+        Heading.h3 [] [str "Input"]
+        hr []
+        if (isValidState && not state.HasValidFasta) then
+            p [Class "is-danger"] [str "Your fasta contained invalid characters:"]
+            p [Class "is-danger"] [str (sprintf "%A" state.InvalidFastaChars)   ]
+            Button.button [Button.CustomClass "is-danger";Button.OnClick (fun _ -> Reset |> setState)] [str "Click to reset Input"]
+        modeSelection state setState
+        Heading.h5 [Heading.IsSubtitle] [
+            str leftHeader
+            a [ Class "leftAlternative"
+                Props.OnClick
+                    (fun _ ->
+                        match state.SeqMode with 
+                        | Some Single | None -> UpdateSeqMode (Some Fasta) |> setState
+                        | Some Fasta -> UpdateSeqMode (Some Single) |> setState
+                    )] [
+                str leftAlternative
+            ]
+        ]
+    ]
+
+let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (buttonMsg:string) (state: InputState) (setState: InputMsg -> unit) (dispatch: Msg -> unit) =
+    Column.column [Column.Width (Screen.Desktop, Column.Is5);Column.CustomClass "rightSelector"] [
+        Heading.h3 [] [str "Start Prediction"]
+        hr []
+        Field.div [] [
+            Button.button [
+                Button.Disabled (not isValidState)
+                Button.CustomClass (if isValidState then "is-success" else "is-danger")
+                Button.IsLoading hasJobRunning
+                Button.IsFullWidth
+                Button.CustomClass "startBtn"
+                Button.OnClick (fun _ ->
+                    match state.SeqMode with
+                    | Some Single   -> SingleSequenceRequest state.ComputationMode |> dispatch
+                    | Some Fasta    -> FastaUploadRequest state.ComputationMode |> dispatch
+                    | _ -> ())
+            ] [str buttonMsg ]
+        ]
+        Label.label [Label.Size IsMedium; Label.Props [Style [CSSProp.Color "$csb-orange"]]] [str "select iMLP Model:"]
+        Field.div [Field.IsGrouped] [
+            let isNonPlant = state.OrganismModel = OrganismModel.NonPlant
+            Control.div [Control.Props [Style [CSSProp.Color "$csb-orange"]]] [
+                Checkbox.checkbox [Props [Style [CSSProp.Color "$csb-orange"] ]] [
+                    Checkbox.input [Props [OnClick (fun _ -> UpdateOrganismModel OrganismModel.NonPlant |> setState); Checked isNonPlant]]
+                    b [] [ str "NonPlant"]
+                ]
+            ]
+            Control.div [Control.Props [Style [CSSProp.Color "$csb-orange"]]] [
+                Checkbox.checkbox [Props [Style [CSSProp.Color "$csb-orange"]]] [
+                    Checkbox.input [Props[OnClick (fun _ -> UpdateOrganismModel OrganismModel.Plant |> setState); Checked (not isNonPlant)]]
+                    b [] [ str "Plant"]
+                ]
+            ]
+        ]
+    ]
 
 [<ReactComponent>]
 let View (hasJobRunning: bool) (dispatch : Msg -> unit) =
     let state, setState = React.useElmish(init, update, [||])
 
     let isValidState, buttonMsg = validateInputState state
-
-    let leftHeader,leftAlternative =
-        match state.SeqMode with 
-        | Some Single | None -> "Or upload a ", "file"
-        | Some Fasta -> "Or insert a single amino acid ", "sequence"
-    
-    div [] [
-        Columns.columns [Columns.CustomClass "ProcessDecision"] [
-            Column.column [Column.Width (Screen.Desktop, Column.Is7);Column.CustomClass "leftSelector"] [
-                Columns.columns [] [
-                    Column.column [Column.Width (Screen.Desktop, Column.Is3)] []
-                    Column.column [Column.Width (Screen.Desktop, Column.Is9)] [
-                        yield br []
-                        yield Heading.h3 [] [str "Input"]
-                        yield hr []
-                        if (isValidState && not state.HasValidFasta) then
-                            yield p [Class "is-danger"] [str "Your fasta contained invalid characters:"]
-                            yield p [Class "is-danger"] [str (sprintf "%A" state.InvalidFastaChars)   ]
-                            yield Button.button [Button.CustomClass "is-danger";Button.OnClick (fun _ -> Reset |> setState)] [str "Click to reset Input"]
-                        yield modeSelection state setState
-                        yield br []
-                        yield
-                            Heading.h5 [Heading.IsSubtitle]
-                                [
-                                    str leftHeader
-                                    a [ Class "leftAlternative"
-                                        Props.OnClick
-                                            (fun _ ->
-                                                match state.SeqMode with 
-                                                | Some Single | None -> UpdateSeqMode (Some Fasta) |> setState
-                                                | Some Fasta -> UpdateSeqMode (Some Single) |> setState
-                                            )] [
-                                        str leftAlternative
-                                    ]
-                                ]
-                        yield br []
-                    ]
-                ]
-            ]
-            Column.column [Column.Width (Screen.Desktop, Column.Is5);Column.CustomClass "rightSelector"] [
-                Columns.columns [] [
-                    Column.column [Column.Width (Screen.Desktop, Column.Is8)] [
-                        br []
-                        Heading.h3 [] [str "Start Prediction"]
-                        hr []
-                        
-                        Button.button [
-                            (if isValidState then
-                                Button.Disabled false 
-                            else 
-                                Button.Disabled true)
-
-                            (if isValidState then
-                                Button.CustomClass "is-success"
-                            else 
-                                Button.CustomClass "is-danger" )
-
-                            Button.IsLoading hasJobRunning
-                            Button.IsFullWidth
-                            Button.CustomClass "startBtn"
-                            Button.OnClick (fun _ ->
-                                match state.SeqMode with
-                                | Some Single   -> SingleSequenceRequest state.ComputationMode |> dispatch
-                                | Some Fasta    -> FastaUploadRequest state.ComputationMode |> dispatch
-                                | _ -> ())
-                        ] [str buttonMsg ]
-                        br []
-                        Label.label [Label.Size IsMedium; Label.Props [Style [CSSProp.Color "$csb-orange"]]] [str "select iMLP Model:"]
-                        Field.div [Field.IsGrouped] [
-                            let isNonPlant = state.OrganismModel = OrganismModel.NonPlant
-                            Control.div [Control.Props [Style [CSSProp.Color "$csb-orange"]]] [
-                                Checkbox.checkbox [Props [Style [CSSProp.Color "$csb-orange"] ]] [
-                                    Checkbox.input [Props [OnClick (fun _ -> UpdateOrganismModel OrganismModel.NonPlant |> setState); Checked isNonPlant]]
-                                    b [] [ str "NonPlant"]
-                                ]
-                            ]
-                            Control.div [Control.Props [Style [CSSProp.Color "$csb-orange"]]] [
-                                Checkbox.checkbox [Props [Style [CSSProp.Color "$csb-orange"]]] [
-                                    Checkbox.input [Props[OnClick (fun _ -> UpdateOrganismModel OrganismModel.Plant |> setState); Checked (not isNonPlant)]]
-                                    b [] [ str "Plant"]
-                                ]
-                            ]
-                        ]
-                        Control.div [Control.Props [Style [CSSProp.Color "$csb-orange"]]] [
-                            Checkbox.checkbox [Props [Style [CSSProp.Color "$csb-orange"]]] [
-                                //Checkbox.input [Props[OnClick (fun _ -> EULAAcceptedChange |> dispatch)]]
-                                b [] [ str" Use legacy computation model"]
-                            ]
-                            div [Class "block"] [
-                                str "in order to use the targetP-based legacy model you have to agree to iMLP's "
-                                //a [ OnClick (fun _ -> ShowEulaModal true |> dispatch)
-                                //    Style [Color "white";]] [
-                                //    str "end user license agreement (EULA)"
-                                //]
-                            ]
-                        ]
-                    ]
-                    Column.column [Column.Width (Screen.Desktop, Column.Is4)] []
-                ]
-                
-            ]
+        
+    div [Style [FlexGrow 1; Display DisplayOptions.Flex; FlexDirection "column"]] [
+        Columns.columns [Columns.CustomClass "ProcessDecision"; Columns.Props [Style [FlexGrow 1]]] [
+            inputLeft isValidState state setState
+            startPredictionRight hasJobRunning isValidState buttonMsg state setState dispatch
         ]
     ]
