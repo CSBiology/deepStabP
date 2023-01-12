@@ -18,7 +18,6 @@ module DeepStabP =
 
     open System.Net.Http
     open Newtonsoft.Json
-    open System
 
     let DeepStabP_url = "http://localhost:8000"
     let DeepStabP_url_v1 = DeepStabP_url + "/api/v1"
@@ -42,11 +41,16 @@ module DeepStabP =
 
     let example = {
         growth_temp = 22
+        mt_mode = MT_Mode.Lysate
+        fasta = testFasta
     }
+
+    let settings = JsonSerializerSettings()
+    settings.Converters.Add(Converters.StringEnumConverter())
 
     let postPredictHandler (info:PredictorInfo) =
         task {
-            let requestJson = JsonConvert.SerializeObject(info)
+            let requestJson = JsonConvert.SerializeObject(info, settings)
             let content = new StringContent(requestJson,System.Text.Encoding.UTF8, "application/json")
             let! world = httpClient.PostAsync(DeepStabP_url_v1 + "/predict", content)
             let! content = world.Content.ReadAsStringAsync()
@@ -68,7 +72,6 @@ let deepStabPApi : IDeepStabPApi = {
     helloWorld = fun () -> DeepStabP.testHandler
     predict = fun () -> DeepStabP.postPredictHandler DeepStabP.example
 }
-
 
 let webApp_deepStabp =
     Remoting.createApi ()

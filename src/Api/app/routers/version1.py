@@ -1,6 +1,4 @@
 from fastapi import APIRouter
-from typing import Union
-from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import  T5EncoderModel, T5Tokenizer
 from tqdm.auto import *
@@ -9,18 +7,21 @@ from ..predictor import *
 
 # mirrored in dotnet Shared/DeepStabP.Types.fs
 class PredictorInfo(BaseModel):
-    growth_temp: int
+    growth_temp : int
+    mt_mode     : str
+    fasta       : str
 
-variable= '''>sp|A0A178VEK7|DUO1_ARATH Transcription factor DUO1 OS=Arabidopsis thaliana OX=3702 GN=DUO1 PE=1 SV=1
-MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-NSSDASSSSFNPKSSSSHRLKGKNVKPIRQSSQGFGLVEEEVTVSSSCSQMVPYSSDQVG
-DEVLRLPDLGVKLEHQPFAFGTDLVLAEYSDSQNDANQQAISPFSPESRELLARLDDPFY
-YDILGPADSSEPLFALPQPFFEPSPVPRRCRHVSKDEEADVFLDDFPADMFDQVDPIPSP
->sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
-MAQYHQQHEMKQTMAETQYVTAPPPMGYPVMMKDSPQTVQPPHEGQSKGSGGFLRGCLAA
-MCCCCVLDCVF
-'''
+# This is for local testing
+#variable= '''>sp|A0A178VEK7|DUO1_ARATH Transcription factor DUO1 OS=Arabidopsis thaliana OX=3702 GN=DUO1 PE=1 SV=1
+#MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
+#RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
+#NSSDASSSSFNPKSSSSHRLKGKNVKPIRQSSQGFGLVEEEVTVSSSCSQMVPYSSDQVG
+#DEVLRLPDLGVKLEHQPFAFGTDLVLAEYSDSQNDANQQAISPFSPESRELLARLDDPFY
+#YDILGPADSSEPLFALPQPFFEPSPVPRRCRHVSKDEEADVFLDDFPADMFDQVDPIPSP
+#>sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
+#MAQYHQQHEMKQTMAETQYVTAPPPMGYPVMMKDSPQTVQPPHEGQSKGSGGFLRGCLAA
+#MCCCCVLDCVF
+#'''
 
 router = APIRouter(
     prefix="/api/v1",
@@ -34,6 +35,6 @@ prediction_net = LSMTNeuralNet.load_from_checkpoint ('trained_model/sampled_32_b
 
 @router.post("/predict", tags=["latest"])
 def predict(info: PredictorInfo):
-    new_df = create_dataframe (variable, 'lysate', info.growth_temp)
+    new_df = create_dataframe (info.fasta, info.mt_mode, info.growth_temp)
     prediction = determine_tm (new_df, model, prediction_net, new_features, tokenizer)
     return {"Prediction": prediction}
