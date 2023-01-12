@@ -6,7 +6,10 @@ open State
 let init () : Model * Cmd<Msg> =
     let model = Model.init
 
-    let cmd = Cmd.ofMsg GetVersionRequest
+    let cmd =
+        Cmd.batch [
+            Cmd.ofMsg GetVersionRequest
+        ]
 
     model, cmd
 

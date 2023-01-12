@@ -243,24 +243,24 @@ let View (hasJobRunning: bool) (dispatch : Msg -> unit) =
                                 | _ -> ())
                         ] [str buttonMsg ]
                         br []
-                        Label.label [Label.Size IsMedium; Label.Props [Style [CSSProp.Color "rgb(237, 125, 49)"]]] [str "select iMLP Model:"]
+                        Label.label [Label.Size IsMedium; Label.Props [Style [CSSProp.Color "$csb-orange"]]] [str "select iMLP Model:"]
                         Field.div [Field.IsGrouped] [
                             let isNonPlant = state.OrganismModel = OrganismModel.NonPlant
-                            Control.div [Control.Props [Style [CSSProp.Color "rgb(237, 125, 49)"]]] [
-                                Checkbox.checkbox [Props [Style [CSSProp.Color "rgb(237, 125, 49)"] ]] [
+                            Control.div [Control.Props [Style [CSSProp.Color "$csb-orange"]]] [
+                                Checkbox.checkbox [Props [Style [CSSProp.Color "$csb-orange"] ]] [
                                     Checkbox.input [Props [OnClick (fun _ -> UpdateOrganismModel OrganismModel.NonPlant |> setState); Checked isNonPlant]]
                                     b [] [ str "NonPlant"]
                                 ]
                             ]
-                            Control.div [Control.Props [Style [CSSProp.Color "rgb(237, 125, 49)"]]] [
-                                Checkbox.checkbox [Props [Style [CSSProp.Color "rgb(237, 125, 49)"]]] [
+                            Control.div [Control.Props [Style [CSSProp.Color "$csb-orange"]]] [
+                                Checkbox.checkbox [Props [Style [CSSProp.Color "$csb-orange"]]] [
                                     Checkbox.input [Props[OnClick (fun _ -> UpdateOrganismModel OrganismModel.Plant |> setState); Checked (not isNonPlant)]]
                                     b [] [ str "Plant"]
                                 ]
                             ]
                         ]
-                        Control.div [Control.Props [Style [CSSProp.Color "rgb(237, 125, 49)"]]] [
-                            Checkbox.checkbox [Props [Style [CSSProp.Color "rgb(237, 125, 49)"]]] [
+                        Control.div [Control.Props [Style [CSSProp.Color "$csb-orange"]]] [
+                            Checkbox.checkbox [Props [Style [CSSProp.Color "$csb-orange"]]] [
                                 //Checkbox.input [Props[OnClick (fun _ -> EULAAcceptedChange |> dispatch)]]
                                 b [] [ str" Use legacy computation model"]
                             ]

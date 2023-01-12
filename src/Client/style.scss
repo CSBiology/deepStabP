@@ -1,13 +1,28 @@
+$csb-greyblue: #507289;
+$csb-orange: #FFA252;
+$csb-bluedark: #042C58;
+$csb-bluelight: #6AB2E7;
+$csb-red: #E31B4C;
+$csb-green: #26D07C;
+$csb-smokewhite: #deebf7;
+
+@import "~bulma/bulma";
+
+// global bulma overrides
+$primary: $csb-orange;
+$success: $csb-green;
+$info: $csb-bluelight;
+$danger: $csb-red;
+
 html {
     overflow: unset
 }
 
 body {
     overflow-y: auto;
-    background-image: url(https://picsum.photos/200/300);
-    background: url("/Images/CircuitBrain.jpg");
+    background: url("/Images/deepStabP_Workflow.png");
     background-repeat: no-repeat;
-    background-size: 100%;
+    background-size: 90%;
     background-attachment: fixed;
     background-position: center;
     height: 100vh;
@@ -20,17 +35,17 @@ p.is-danger {
 }
 
 .navbar.is-dark.csbNav {
-    background-color: rgb(68,84,106);
+    background-color: $csb-greyblue;
 }
 
 a.navbar-item.is-active {
-    background-color: rgb(222, 235, 247) !important;
-    color: rgb(68,84,106) !important;
+    background-color: $csb-smokewhite !important;
+    color: $csb-greyblue !important;
 }
 
 .HelpSection {
-    background-color: rgb(222, 235, 247);
-    color: rgb(68,84,106);
+    background-color: $csb-smokewhite;
+    color: $csb-greyblue;
     width: 100%;
     border: 1px solid;
 }
@@ -40,19 +55,20 @@ a.navbar-item.is-active {
     cursor: pointer;
 }
 
-
 .hero.csbHero {
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ed7d31+0,faee05+100 */
-    background: #ed7d31;
-    background: -moz-linear-gradient(-55deg, #ed7d31 0%, #fad505 80%);
-    background: -webkit-linear-gradient(-55deg, #ed7d31 0%,#fad505 100%);
-    background: linear-gradient(145deg, rgba(237, 125, 49, 0.9) 0%,rgba(250, 238, 5, 0.9) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ed7d31', endColorstr='#faee05',GradientType=1 );
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#006b6b+1,eb2849+100&0.9+1,0.9+100 */
+    background: -moz-linear-gradient(left, rgba(0,107,107,0.9) 1%, rgba(235,40,73,0.9) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(0,107,107,0.9) 1%,rgba(235,40,73,0.9) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(0,107,107,0.9) 1%,rgba(235,40,73,0.9) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e6006b6b', endColorstr='#e6eb2849',GradientType=1 ); /* IE6-9 */
+
     text-align: justify;
 }
 
+
+
 .textarea {
-    border-color: rgb(237, 125, 49);
+    border-color: $csb-orange;
 }
 
 .is-danger-CSB {
@@ -64,16 +80,16 @@ a.navbar-item.is-active {
 }
 
 .section.csbSection {
-    background-color: rgb(222, 235, 247, 0.8);
+    background-color: rgb($csb-smokewhite, 0.8);
     opacity: 0.6;
 }
 
 .section.resultSection {
-    background: rgba(222,235,247,0.95);
+    background: rgba($csb-smokewhite, 0.95);
 }
 
 .section.resultSection hr {
-    background: rgb(68,84,106)
+    background: $csb-greyblue
 }
 
 .ProcessDecision {
@@ -92,7 +108,7 @@ a.navbar-item.is-active {
 }
 
 .tile.csbTile {
-    border: 1px solid rgb(68,84,106);
+    border: 1px solid $csb-greyblue;
 }
 
 .ResultFrame {
@@ -158,23 +174,23 @@ a.navbar-item.is-active {
 }
 
 .leftSelector {
-    background-color: rgba(256, 256, 256, 1.0);
+    background-color: white;
 
     @supports (backdrop-filter: blur(3px)) or (--webkit-backdrop-filter: blur(3px)) {
         -webkit-backdrop-filter: blur(5px);
         backdrop-filter: blur(5px);
-        background-color: rgba(256, 256, 256, 0.85);
+        background-color: rgba(white, 0.85);
     }
 
     text-align: right;
 }
 
 .leftSelector .title {
-    color: rgb(237, 125, 49)
+    color: $csb-orange
 }
 
 .leftSelector hr {
-    background-color: rgb(237, 125, 49)
+    background-color: $csb-orange
 }
 
 .leftAlternative {
@@ -183,11 +199,11 @@ a.navbar-item.is-active {
 
 .leftAlternative:hover {
     color: white;
-    background-color: rgb(68,84,106);
+    background-color: $csb-greyblue;
 }
 
 .rightSelector {
-    background-color: rgba(68,84,106, 0.95);
+    background-color: rgba($csb-greyblue, 0.95);
 
     @supports (backdrop-filter: blur(3px)) or (--webkit-backdrop-filter: blur(3px)) {
         -webkit-backdrop-filter: blur(5px);
@@ -199,39 +215,39 @@ a.navbar-item.is-active {
 }
 
 .rightSelector .title {
-    color: rgb(237, 125, 49)
+    color: $csb-orange
 }
 
 .rightSelector hr {
-    background-color: rgb(237, 125, 49)
+    background-color: $csb-orange
 }
 
 .rightSelector .radio {
-    color: rgb(237, 125, 49);
+    color: $csb-orange;
     font-size: 1.25rem;
 }
 
 .fastaFileUploadBtn {
-    border: 1px solid rgb(237, 125, 49);
-    background-color: rgb(256, 256, 256);
-    color: rgb(237, 125, 49)
+    border: 1px solid $csb-orange;
+    background-color: rgb(255, 255, 255);
+    color: $csb-orange
 }
 
 .fastaFileUploadBtn .title {
-    color: rgb(237, 125, 49);
+    color: $csb-orange;
 }
 
 .file-label:hover .file-cta {
-    background-color: rgb(237, 125, 49);
+    background-color: $csb-orange;
     color: white;
 }
 
 .file-label:hover .title {
-    color: rgb(222, 235, 247);
+    color: $csb-smokewhite;
 }
 
 #ResultHeading {
-    background: rgba(222,235,247,0.95);
+    background: rgba($csb-smokewhite,0.95);
     margin-bottom: 0 !important;
     margin-top: 0 !important;
 }
@@ -242,23 +258,23 @@ a.navbar-item.is-active {
 }
 
 #ResultHeading .title {
-    color: rgb(68,84,106);
+    color: $csb-greyblue;
 }
 
 #ResultHeading .pagination-link {
-    color: rgb(68,84,106);
-    border-color: rgb(68,84,106);
-    background-color: rgb(237, 125, 49);
+    color: $csb-greyblue;
+    border-color: $csb-greyblue;
+    background-color: $csb-orange;
 }
 
 #ResultHeading .pagination-link.is-current {
-    border-color: rgb(237, 125, 49);
-    background-color: rgb(68,84,106);
-    color: rgb(237, 125, 49);
+    border-color: $csb-orange;
+    background-color: $csb-greyblue;
+    color: $csb-orange;
 }
 
 #ResultHeading hr {
-    background-color: rgb(68,84,106);
+    background-color: $csb-greyblue;
 }
 
 .leftResultHeading {
@@ -284,22 +300,22 @@ a.navbar-item.is-active {
 }
 
 .resultBar.title, .resultBar .pagination-link {
-    color: rgb(68,84,106);
+    color: $csb-greyblue;
 }
 
 .resultBar .pagination-link {
-    border-color: rgb(68,84,106);
-    background-color: rgb(237, 125, 49);
+    border-color: $csb-greyblue;
+    background-color: $csb-orange;
 }
 
 .resultBar .pagination-link.is-current {
-    border-color: rgb(237, 125, 49);
-    background-color: rgb(68,84,106);
-    color: rgb(237, 125, 49);
+    border-color: $csb-orange;
+    background-color: $csb-greyblue;
+    color: $csb-orange;
 }
 
 .resultBar hr {
-    background-color: rgb(68,84,106);
+    background-color: $csb-greyblue;
 }
 
 .leftResultBar {
@@ -308,7 +324,7 @@ a.navbar-item.is-active {
 
 a[download] {
     font-size: 1.5em;
-    background-color: #22c65b;
+    background-color: $csb-green;
     border-color: transparent;
     color: #fff;
     width: 100%;
@@ -340,15 +356,15 @@ a[download]:focus {
 
 
 .is-selected-model {
-    border: 2px solid green;
+    border: 2px solid $csb-green;
 }
 
 .ErrorSection {
-    background-color: rgba( 240, 128, 128, 0.7);
+    background-color: rgba( $csb-red, 0.7);
 }
 
 .ErrorSection h1 {
-    color: red
+    color: $csb-red
 }
 
 .resetBtn {
@@ -358,37 +374,37 @@ a[download]:focus {
 }
 
 .plotModeBtnActive {
-    border-color: rgb(237, 125, 49);
-    background-color: rgb(68,84,106);
-    color: rgb(237, 125, 49);
+    border-color: $csb-orange;
+    background-color: $csb-greyblue;
+    color: $csb-orange;
 }
 
 .plotModeBtnActive:focus {
-    border-color: rgb(237, 125, 49) !important;
-    background-color: rgb(68,84,106) !important;
-    color: rgb(237, 125, 49) !important;
+    border-color: $csb-orange !important;
+    background-color: $csb-greyblue !important;
+    color: $csb-orange !important;
 }
 
 .plotModeBtnInactive {
     border: none;
     background-color: whitesmoke !important;
-    color: rgb(68,84,106) !important;
+    color: $csb-greyblue !important;
 }
 
 .plotModeBtnInactive:hover {
-    border: 1px solid rgb(68,84,106) !important;
-    background-color: rgb(222, 235, 247) !important;
-    color: rgb(68,84,106) !important;
+    border: 1px solid $csb-greyblue !important;
+    background-color: $csb-smokewhite !important;
+    color: $csb-greyblue !important;
 }
 
 .footer-left {
-    background-color: rgba(68,84,106, 0.95);
+    background-color: rgba($csb-greyblue, 0.95);
     text-align: right;
     padding-right: 4rem;
     color: white;
 
     @supports (backdrop-filter: blur(3px)) or (--webkit-backdrop-filter: blur(3px)) {
-        background-color: rgba(68,84,106, 0.85);
+        background-color: rgba($csb-greyblue, 0.85);
         -webkit-backdrop-filter: blur(5px);
         backdrop-filter: blur(5px);
     }
@@ -397,11 +413,11 @@ a[download]:focus {
 .footer-right {
     text-align: left;
     padding-left: 4rem;
-    background-color: rgba(256, 256, 256, 1.0);
+    background-color: rgba(255, 255, 255, 1.0);
     color: black;
 
     @supports (backdrop-filter: blur(3px)) or (--webkit-backdrop-filter: blur(3px)) {
-        background-color: rgba(256, 256, 256, 0.85);
+        background-color: rgba(255, 255, 255, 0.85);
         -webkit-backdrop-filter: blur(5px);
         backdrop-filter: blur(5px);
     }
@@ -414,18 +430,18 @@ a[download]:focus {
 
 .footer-left a:hover {
     cursor: pointer;
-    color: #ed7d31;
+    color: $csb-orange;
     font-weight: bold
 }
 
 .footer-right a {
     text-decoration: none;
-    color: rgb(68,84,106)
+    color: $csb-greyblue
 }
 
 .footer-right a:hover {
     cursor: pointer;
-    color: #ed7d31;
+    color: $csb-orange;
     font-weight: bold
 }
 
