@@ -131,22 +131,6 @@ def determine_tm (dataframe, transformer, tm_predicter, new_features, tokenizer)
     output_df = output_df.to_records(index=False)
     # https://stackoverflow.com/questions/71102658/how-can-i-return-a-numpy-array-using-fastapi
     output_df = output_df.tolist()
-    # [
-    #   [\"A0A178VEK7\", 49.820807421815815], -> obj
-    #   [\"A0A178WF56\", 49.33970289375122] -> obj
-    # ]
-    # ==>
-    # [
-    #    {
-    #      seq: "A0A178VEK7"
-    #      tm: 49.820807421815815
-    #    },
-    #    {
-    #      seq: "A0A178VEK7"
-    #      tm: 49.820807421815815
-    #    },
-    # ]
-    # output_df = json.dumps(output_df)
     return output_df
 
 

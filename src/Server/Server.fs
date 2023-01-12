@@ -18,11 +18,13 @@ module DeepStabP =
 
     open System.Net.Http
     open Newtonsoft.Json
+    open System
 
-    let mutable DeepStabP_url = "http://localhost:8000"
+    let DeepStabP_url = "http://localhost:8000"
+    let DeepStabP_url_v1 = DeepStabP_url + "/api/v1"
 
     let httpClient = new HttpClient()
-    httpClient.BaseAddress <- System.Uri(DeepStabP_url)
+    httpClient.BaseAddress <- System.Uri(DeepStabP_url_v1)
 
     // https://www.newtonsoft.com/json
     // https://stackoverflow.com/questions/42000362/creating-a-proxy-to-another-web-api-with-asp-net-core
@@ -46,7 +48,7 @@ module DeepStabP =
         task {
             let requestJson = JsonConvert.SerializeObject(info)
             let content = new StringContent(requestJson,System.Text.Encoding.UTF8, "application/json")
-            let! world = httpClient.PostAsync("/predict", content)
+            let! world = httpClient.PostAsync(DeepStabP_url_v1 + "/predict", content)
             let! content = world.Content.ReadAsStringAsync()
             let response = JsonConvert.DeserializeObject<{| Prediction: seq<seq<obj>> |}>(content)
             let responseParsed =
@@ -70,7 +72,7 @@ let deepStabPApi : IDeepStabPApi = {
 
 let webApp_deepStabp =
     Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.withRouteBuilder (Route.builderVersioned "v1")
     |> Remoting.fromValue deepStabPApi
     |> Remoting.buildHttpHandler
 

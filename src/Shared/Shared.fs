@@ -6,6 +6,9 @@ module Route =
     let builder typeName methodName =
         sprintf "/api/%s/%s" typeName methodName
 
+    let builderVersioned version typeName methodName =
+        sprintf "/api/%s/%s/%s" version typeName methodName
+
 type IServiceApi = {
     getVersion: unit -> Async<string>
 }

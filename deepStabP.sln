@@ -41,9 +41,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{BD8D11FE-E04
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{5177416D-117D-4540-ADB8-49D4CC154A4C}"
 	ProjectSection(SolutionItems) = preProject
-		HelloWorld.py = HelloWorld.py
+		src\Api\app\dependencies.py = src\Api\app\dependencies.py
 		src\Api\app\main.py = src\Api\app\main.py
 		src\Api\app\predictor.py = src\Api\app\predictor.py
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "routers", "routers", "{DC54CDE7-F490-4B45-BF78-C06D3FFF55B8}"
+	ProjectSection(SolutionItems) = preProject
+		src\Api\app\routers\version1.py = src\Api\app\routers\version1.py
 	EndProjectSection
 EndProject
 Global
@@ -153,6 +158,7 @@ Global
 		{CF8C20AC-1FC4-4114-ACB8-6CE6E51F34F9} = {3820D9E8-1B4E-486E-9C46-D52E3784D222}
 		{BD8D11FE-E046-41B1-A154-951A0AA8242C} = {F84DCF8A-FC1A-4677-AF4D-616AD7DB3470}
 		{5177416D-117D-4540-ADB8-49D4CC154A4C} = {BD8D11FE-E046-41B1-A154-951A0AA8242C}
+		{DC54CDE7-F490-4B45-BF78-C06D3FFF55B8} = {5177416D-117D-4540-ADB8-49D4CC154A4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DBBB1FED-BC19-4048-9EB7-A3BC02B6A3B4}
