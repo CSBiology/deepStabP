@@ -5,8 +5,6 @@ open Fable.React.Props
 open Fulma
 open Feliz
 
-let FooterHeight = 56
-
 let footer (versions: State.Versions) =
     Footer.footer [
         Props [Style [Position PositionOptions.Relative; Bottom 0; Width "100%";]]
@@ -16,8 +14,10 @@ let footer (versions: State.Versions) =
         ] [
             div [] [
                 str "This service is developed and maintained by the "
-                a [Href "https://csb.bio.uni-kl.de/"; Class "has-text-info"] [str "Computational Systems Biology department "]
-                str "of the TU Kaiserslautern, Germany."
+                a [Href "https://csb.bio.uni-kl.de/"; Class "has-text-info"] [str "Computational Systems Biology department"]
+                str " of the "
+                a [Href "https://rptu.de"; Class "has-text-info"] [str "RPTU"]
+                str ", Germany."
             ]
             div [] [
                 str ("Web UI: " + versions.UI + " ")
