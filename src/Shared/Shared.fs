@@ -21,5 +21,6 @@ open DeepStabP.Types
 
 type IDeepStabPApi = {
     helloWorld: unit -> Async<HelloWorld>
-    predict: unit -> Async<PredictorResponse []>
+    getVersion: unit -> Async<string>
+    predict: PredictorInfo -> Async<PredictorResponse []>
 }

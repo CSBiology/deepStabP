@@ -14,6 +14,8 @@ tags_metadata = [
     },
 ]
 
+predictor_version = "1.0.0"
+
 app = FastAPI(
     openapi_tags=tags_metadata
 )
@@ -26,6 +28,9 @@ app.include_router(version1.router)
 def read_root():
     return {"Hello": "World"}
 
+@app.get("/predictor_version")
+def read_root():
+    return {"Version": predictor_version}
 
 
 
