@@ -8,22 +8,33 @@ let init () : Model * Cmd<Msg> =
 
     let cmd =
         Cmd.batch [
-            Cmd.ofMsg GetVersionRequest
+            Cmd.ofMsg GetVersionUIRequest
+            Cmd.ofMsg GetVersionApiRequest
         ]
 
     model, cmd
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
-    | GetVersionRequest ->
+    | GetVersionUIRequest ->
         let cmd =
             Cmd.OfAsync.perform
                 Api.serviceApi.getVersion
                 ()
-                GetVersionResponse
+                GetVersionUIResponse
         model, cmd
-    | GetVersionResponse version ->
-        let nextModel = {model with AppVersion = version}
+    | GetVersionUIResponse ui_version ->
+        let nextModel = {model with Version = {model.Version with UI = ui_version}}
+        nextModel, Cmd.none
+    | GetVersionApiRequest ->
+        let cmd =
+            Cmd.OfAsync.perform
+                Api.deepStabPApi.getVersion
+                ()
+                GetVersionApiResponse
+        model, cmd
+    | GetVersionApiResponse api_version ->
+        let nextModel = {model with Version = {model.Version with Api = api_version}}
         nextModel, Cmd.none
     | SingleSequenceRequest tst -> model, Cmd.none
     | FastaUploadRequest tst -> model, Cmd.none

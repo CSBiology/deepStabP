@@ -6,13 +6,13 @@ $csb-red: #E31B4C;
 $csb-green: #26D07C;
 $csb-smokewhite: #deebf7;
 
-@import "~bulma/bulma";
-
 // global bulma overrides
 $primary: $csb-orange;
 $success: $csb-green;
 $info: $csb-bluelight;
 $danger: $csb-red;
+
+@import "~bulma/bulma";
 
 html {
     overflow: unset

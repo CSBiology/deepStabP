@@ -6,7 +6,7 @@ open Fulma
 open State
 
 [<Literal>]
-let HeaderTextColor = "has-text-black" //"has-text-white-ter"
+let HeaderTextColor = "has-text-white-ter" //"has-text-black" //"has-text-white-ter"
 
 let hero (model : Model) (dispatch : Msg -> unit) =
     Hero.hero [Hero.IsMedium; Hero.CustomClass "csbHero"] [
@@ -25,13 +25,13 @@ let hero (model : Model) (dispatch : Msg -> unit) =
                 Heading.h4 [Heading.IsSubtitle;Heading.IsSpaced; Heading.CustomClass HeaderTextColor] [
                     str "Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet: "
                     a [
+                        Class "has-text-info"
                         //OnClick (fun _ -> ChangeHelpDisplay TechnicalScientificDetails |> dispatch)
                         Style [
                             TextDecoration "none"
                             Color "white"
-                        ]
-                        ] [
-                            str "'Details'"
+                    ]] [
+                        str "'Details'"
                     ]
                     str " section." 
                     ]

@@ -12,6 +12,6 @@ let view (model: Model) (dispatch: Msg -> unit) =
             Client.Components.Navbar.Navbar model dispatch
             Client.View.MainView.hero model dispatch
             Client.View.InputView.View model.HasJobRunning dispatch
-            Client.Components.Footer.footer model.AppVersion
+            Client.Components.Footer.footer model.Version
         ]
     ]

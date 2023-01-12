@@ -7,7 +7,7 @@ open Feliz
 
 let FooterHeight = 56
 
-let footer (version:string) =
+let footer (versions: State.Versions) =
     Footer.footer [
         Props [Style [Position PositionOptions.Relative; Bottom 0; Width "100%";]]
     ] [
@@ -16,13 +16,13 @@ let footer (version:string) =
         ] [
             div [] [
                 str "This service is developed and maintained by the "
-                a [Props.Href "https://csb.bio.uni-kl.de/"] [str "Computational Systems Biology department "]
+                a [Href "https://csb.bio.uni-kl.de/"; Class "has-text-info"] [str "Computational Systems Biology department "]
                 str "of the TU Kaiserslautern, Germany."
             ]
             div [] [
-                str ("Web UI: " + version + " ")
+                str ("Web UI: " + versions.UI + " ")
                 Html.i [prop.className "fa-solid fa-code"]
-                str (" deepStabP: " + "")
+                str (" deepStabP: " + versions.Api)
             ]
         ]
     ]
