@@ -230,8 +230,7 @@ let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
                                     RemoveFasta |> setState
                                 )
                                 Button.Size IsSmall
-                                Button.IsOutlined
-                                Button.Color Color.IsDanger
+                                Button.IsGhost
                                 Button.Props [Style [
                                     Float FloatOptions.Right
                                     TextAlign TextAlignOptions.Center

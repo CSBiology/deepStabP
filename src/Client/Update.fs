@@ -49,7 +49,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         nextModel, cmd
     | PredictionResponse (Ok response) ->
         let nextModel = { model with HasJobRunning = false }
-        Browser.Dom.window.alert (response)
+        ModalLogic.renderModal(Client.Components.ResultModal.Results())
         nextModel, Cmd.none
     | PredictionResponse (Error e) ->
         let nextModel = { model with HasJobRunning = false }
