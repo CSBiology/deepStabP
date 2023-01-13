@@ -14,6 +14,8 @@ let init () : Model * Cmd<Msg> =
 
     model, cmd
 
+open Feliz.SweetAlert
+
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
     | GetVersionUIRequest ->
@@ -48,10 +50,9 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                 (Error >> PredictionResponse)
         nextModel, cmd
     | PredictionResponse (Ok response) ->
-        let nextModel = { model with HasJobRunning = false }
-        ModalLogic.renderModal(Client.Components.ResultModal.Results())
-        nextModel, Cmd.none
+        let nextModel = { model with HasJobRunning = false; Result = response }
+        let modal = Client.Components.SweetAlertModals.resultModal_success(nextModel)
+        nextModel, modal
     | PredictionResponse (Error e) ->
         let nextModel = { model with HasJobRunning = false }
-        Browser.Dom.window.alert (e)
-        nextModel, Cmd.none
+        nextModel, Cmd.Swal.Simple.error(e.Message, e.InnerException.ToString())

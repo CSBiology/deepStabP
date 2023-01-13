@@ -17,11 +17,13 @@ type Versions = {
 
 type Model = {
     Version         : Versions
+    Result          : DeepStabP.Types.PredictorResponse []
     HasJobRunning   : bool
 } with
     static member init = {
-        HasJobRunning   = false
         Version         = Versions.init
+        Result          = Array.empty
+        HasJobRunning   = false
     }
 
 type Msg =

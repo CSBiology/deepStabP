@@ -17,7 +17,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
             Client.Components.Navbar.Navbar model dispatch
             Client.View.MainView.hero model dispatch
             ModalLogic.modalContainer
-            Client.View.InputView.View model.HasJobRunning dispatch
+            Client.View.InputView.View model.Version model.HasJobRunning dispatch
             Client.Components.Footer.footer model.Version
         ]
     ]

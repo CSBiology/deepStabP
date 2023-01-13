@@ -124,27 +124,33 @@ module private Update =
 
 open State
 
-let private validateInputState (state:InputState) =
-    match state.SeqMode with
-    | Some Single ->
-        match state.SingleSequence with
-        | "" -> false, "No data provided"
-        | _ ->
-            match state.HasValidFasta with
-            | false -> false, "Fasta is invalid"
-            | _ -> true, "Start computation"
-    | Some Fasta -> 
-        match state.FastaFileData with
-        | "" -> false, "No data provided"
-        | x when x.Split([|'>'|],System.StringSplitOptions.RemoveEmptyEntries).Length > 1000 ->
-            false, "Too many sequences (>1000)."
-        | _ ->
-            match state.HasValidFasta with
-            | false -> false, "Fasta is invalid"
-            | _ -> true, "Start computation"
-    | None ->
-        false, "No data provided"
-
+let private validateInputState (versions: State.Versions) (state:InputState) =
+    let validateInput() =
+        match state.SeqMode with
+        | Some Single ->
+            match state.SingleSequence with
+            | "" -> false, "No data provided"
+            | _ ->
+                match state.HasValidFasta with
+                | false -> false, "Fasta is invalid"
+                | _ -> true, "Start computation"
+        | Some Fasta -> 
+            match state.FastaFileData with
+            | "" -> false, "No data provided"
+            | x when x.Split([|'>'|],System.StringSplitOptions.RemoveEmptyEntries).Length > 1000 ->
+                false, "Too many sequences (>1000)."
+            | _ ->
+                match state.HasValidFasta with
+                | false -> false, "Fasta is invalid"
+                | _ -> true, "Start computation"
+        | None ->
+            false, "No data provided"
+    match versions with
+    | noServerConnection when versions.UI = "" ->
+        false, "No connection to server"
+    | noApiConnection when versions.Api = "" ->
+        false, "No connection to predictor service"
+    | _ -> validateInput()
 module private UploadHandler =
     open Fable.Core.JsInterop
 
@@ -327,10 +333,10 @@ let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (butto
 open Update
 
 [<ReactComponent>]
-let View (hasJobRunning: bool) (dispatch : Msg -> unit) =
+let View (versions: State.Versions) (hasJobRunning: bool) (dispatch : Msg -> unit) =
     let state, setState = React.useElmish(init, update, [||])
 
-    let isValidState, buttonMsg = validateInputState state
+    let isValidState, buttonMsg = validateInputState versions state
         
     div [Style [FlexGrow 1; Display DisplayOptions.Flex; FlexDirection "column"]] [
         Columns.columns [Columns.CustomClass "ProcessDecision"; Columns.Props [Style [FlexGrow 1]]] [
