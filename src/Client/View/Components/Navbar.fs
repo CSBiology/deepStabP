@@ -72,10 +72,14 @@ let Navbar (model : Model) (dispatch : Msg -> unit) =
             Navbar.End.div [] [
                 Navbar.Item.a
                     [
-                        //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = Contact then NoHelp else Contact) |> dispatch)]
+                        Navbar.Item.Props [Href "https://github.com/CSBiology/deepStabP"]
                         //Navbar.Item.IsActive (currentDisp = Contact)
                     ] [
-                    str "Sit Amet"
+                    Icon.icon [
+                        Icon.Size IsLarge
+                    ] [
+                        Html.i [prop.className "fas fa-2x fa-brands fa-github "]
+                    ]
                 ]
             ]
         ]
