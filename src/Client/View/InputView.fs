@@ -224,8 +224,8 @@ let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
                         OnChange <| UploadHandler.onchange setState
                     ]]
                     File.cta [CustomClass "fastaFileUploadBtn"] [
-                        Heading.h4 [] [str "Click to choose a file"]
-                        File.icon [] [Html.i [ prop.className "fa fa-upload"]]
+                        Heading.h4 [Heading.Props [Style [PointerEvents "none"; Color "white"]]] [str "Click to choose a file"]
+                        File.icon [Props [Style [PointerEvents "none"]]] [Html.i [ prop.className "fa fa-upload"]]
                     ]
                     if state.FastaFileName <> "" then
                         File.name [Modifiers [Modifier.TextAlignment (Screen.All, TextAlignment.Centered)]] [
