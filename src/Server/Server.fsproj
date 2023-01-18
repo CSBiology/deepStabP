@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Environment.fs" />
     <None Include="paket.references" />
     <Compile Include="Api\DeepStabP.fs" />
     <Compile Include="Server.fs" />

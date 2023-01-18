@@ -1,6 +1,19 @@
 module State
 
-open Shared
+open Fable.Remoting.Client
+open Fable.SimpleJson
+
+type System.Exception with
+    member this.GetPropagatedError() =
+        match this with
+        | :? ProxyRequestException as exn ->
+            try
+                let response = exn.ResponseText |> Json.parseAs<{| error:string; ignored : bool; handled : bool |}>
+                response.error
+            with
+                | ex -> ex.Message
+        | ex ->
+            ex.Message
 
 type OrganismModel =
 | Plant

@@ -55,4 +55,4 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         nextModel, modal
     | PredictionResponse (Error e) ->
         let nextModel = { model with HasJobRunning = false }
-        nextModel, Cmd.Swal.Simple.error(e.Message, e.InnerException.ToString())
+        nextModel, Cmd.Swal.Simple.error(e.GetPropagatedError())

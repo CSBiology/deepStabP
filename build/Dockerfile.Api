@@ -3,6 +3,9 @@ FROM python:3.9
 
 # Set the current working directory to /code.
 
+# Developer
+LABEL author Kevin Frey <freymaurer@gmx.de>
+
 # This is where we'll put the requirements.txt file and the app directory.
 WORKDIR /code
 

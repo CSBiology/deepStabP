@@ -5,6 +5,11 @@ open Fable.Remoting.Giraffe
 open Saturn
 open Giraffe
 open Shared
+open Microsoft.AspNetCore.Http
+
+let private errorHandler (ex:exn) (routeInfo:RouteInfo<HttpContext>) =
+    let msg = sprintf "%s." ex.Message 
+    Propagate msg
 
 let serviceApi = {
     getVersion = fun () -> async {
@@ -22,12 +27,16 @@ let webApp_deepStabp =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder (Route.builderVersioned "v1")
     |> Remoting.fromValue deepStabPApi
+    |> Remoting.withErrorHandler errorHandler
+    |> Remoting.withDiagnosticsLogger (printfn "%A")
     |> Remoting.buildHttpHandler
 
 let webApp_service =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
     |> Remoting.fromValue serviceApi
+    |> Remoting.withErrorHandler errorHandler
+    |> Remoting.withDiagnosticsLogger (printfn "%A")
     |> Remoting.buildHttpHandler
 
 let browserRouter = choose [

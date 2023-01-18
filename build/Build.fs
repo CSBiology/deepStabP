@@ -10,6 +10,8 @@ initializeContext()
 let _ = ReleaseNotesTasks.updateReleaseNotes
 let _ = DockerTasks.dockerBundle
 let _ = DockerTasks.dockerTest
+let _ = DockerTasks.dockerPublish
+let _ = DockerTasks.dockerTestProduction
 
 Target.create "Clean" (fun _ ->
     Shell.cleanDir deployPath
@@ -67,6 +69,12 @@ let dependencies = [
 
     "Clean"
         ==> "releaseNotes"
+
+    // Without Bundle before DockerBundle it will not work
+    "Clean"
+        ==> "InstallClient"
+        ==> "Bundle"
+        ==> "DockerBundle"
 ]
 
 [<EntryPoint>]

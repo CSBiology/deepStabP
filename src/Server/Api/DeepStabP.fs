@@ -14,8 +14,7 @@ open Shared
 //    fasta = testFasta
 //}
 
-let DeepStabP_url = "http://localhost:8000"
-let DeepStabP_url_v1 = DeepStabP_url + "/api/v1"
+let DeepStabP_url_v1 = Environment.deepStabP_url + "/api/v1"
 
 // Useful links:
 // https://www.newtonsoft.com/json

@@ -188,11 +188,11 @@ a.navbar-item.is-active {
 }
 
 .leftSelector .title {
-    color: $csb-orange
+    color: $csb-bluelight//$csb-orange
 }
 
 .leftSelector hr {
-    background-color: $csb-orange
+    background-color: $csb-bluelight //$csb-orange
 }
 
 .leftAlternative {
@@ -217,11 +217,11 @@ a.navbar-item.is-active {
 }
 
 .rightSelector .title {
-    color: $csb-orange
+    color: $csb-bluelight //$csb-orange
 }
 
 .rightSelector hr {
-    background-color: $csb-orange
+    background-color: $csb-bluelight //$csb-orange
 }
 
 .rightSelector .radio {
@@ -230,22 +230,22 @@ a.navbar-item.is-active {
 }
 
 .fastaFileUploadBtn {
-    border: 1px solid $csb-orange;
+    border: 1px solid $csb-bluelight; //$csb-orange;
     background-color: rgb(255, 255, 255);
-    color: $csb-orange
+    color: $csb-bluelight //$csb-orange
 }
 
 .fastaFileUploadBtn .title {
-    color: $csb-orange;
+    color: $csb-bluelight //$csb-orange;
 }
 
 .file-label:hover .file-cta {
-    background-color: $csb-orange;
-    color: white ;
+    background-color: $csb-bluelight; //$csb-orange;
+    color: white;
 }
 
 .file-label .file-cta {
-    background-color: $csb-orange;
+    background-color: $csb-bluelight; //$csb-orange;
     color: white !important;
 }
 

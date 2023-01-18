@@ -43,12 +43,10 @@ dotnet run -- Bundle
 dotnet run -- Azure
 ```
 
-## SAFE Stack Documentation
+## Docker
 
-If you want to know more about the full Azure Stack and all of it's components (including Azure) visit the official [SAFE documentation](https://safe-stack.github.io/docs/).
+### Environment
 
-You will find more documentation about the used F# components at the following places:
+- **DEEPSTABP_URL**: Sets the url for the api predictor backend.
 
-* [Saturn](https://saturnframework.org/)
-* [Fable](https://fable.io/docs/)
-* [Elmish](https://elmish.github.io/elmish/)
+  Default: *"http://localhost:8000"*

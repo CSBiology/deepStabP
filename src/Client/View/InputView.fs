@@ -209,6 +209,7 @@ let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
         match state.SeqMode with
         | Some Single | None ->
             Textarea.textarea [
+                Textarea.Color IsInfo
                 Textarea.Size Size.IsMedium   
                 Textarea.Placeholder "insert a single amino acid sequence in FASTA format (with or without header)"
                 Textarea.OnChange (fun e ->
@@ -296,7 +297,7 @@ let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (butto
     Column.column [Column.Width (Screen.Desktop, Column.Is5);Column.CustomClass "rightSelector"] [
         Heading.h3 [] [str "Start Prediction"]
         hr []
-        Label.label [Label.Size IsSmall; Label.CustomClass "has-text-primary"] [str "Growth temperature"]
+        Label.label [Label.Size IsSmall; Label.CustomClass "has-text-info-light"] [str "Growth temperature"]
         Field.div [] [
             Input.number [
                 Input.Size IsSmall; Input.Color Color.IsBlack
@@ -308,7 +309,7 @@ let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (butto
                 )
             ]
         ]
-        Label.label [Label.Size IsSmall; Label.CustomClass "has-text-primary"] [str "Select environment for melting temperature prediction."]
+        Label.label [Label.Size IsSmall; Label.CustomClass "has-text-info-light"] [str "Select environment for melting temperature prediction."]
         Field.div [Field.IsGrouped] [
             mtMode_checkbox state setState MT_Mode.Lysate
             mtMode_checkbox state setState MT_Mode.Cell

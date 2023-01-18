@@ -106,6 +106,8 @@ let docker =
 
     createProcess path
 
+let dockerCompose = createProcess "docker-compose"
+
 ///Choose process to open plots with depending on OS. Thanks to @zyzhu for hinting at a solution (https://github.com/plotly/Plotly.NET/issues/31)
 let openBrowser url =
     if RuntimeInformation.IsOSPlatform(OSPlatform.Windows) then

@@ -1,5 +1,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
 
+# Developer
+LABEL author Kevin Frey <freymaurer@gmx.de>
+LABEL author Kevin Schneider <schneike@bio.uni-kl.de>
+
 # Install node
 # node_18 will not work because some lazyView2 function from fable is not supported anymore. (see console)
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash

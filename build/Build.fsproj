@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="deepStabP.yml" />
     <None Include="Dockerfile.Api" />
     <None Include="Dockerfile.Api.dockerignore" />
     <None Include="Dockerfile.UI" />
