@@ -6,11 +6,6 @@ import torch as torch
 import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
-from transformers import T5EncoderModel, T5Tokenizer
-from tqdm.auto import tqdm
-import gc
-from IPython.display import display
-import time
 from io import StringIO
 
 #function to convert the fasta sequence into the embeddingns with a lenght of 1024 (the returned embedding is the mean of all amino acid embeddings of the sequence)
