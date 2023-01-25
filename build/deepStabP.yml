@@ -1,21 +1,18 @@
 version: '3.7'
 
-name: DeepStabP
+name: deepstabp
 
 services:
-  CSBarDB:
-    image: mysql:8.0.31
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_DATABASE: CSBarDB
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_USER: Admin
-      MYSQL_PASSWORD: pw1234
+  api:
+    image: csbdocker/deepstabp-api:latest
     ports:
-      - 3306:3306
-  adminer:
-    image: adminer:4.8.1
+      - 8000:80
+  ui:
+    image: csbdocker/deepstabp-ui:latest
     environment:
-      ADMINER_DEFAULT_SERVER: CSBarDB
+      DEEPSTABP_URL: "http://host.docker.internal:8000"
     ports:
-      - 8000:8080
+      - 5000:5000
+    # Use this to make host.docker.internal accessible on linux docker
+    #extra_hosts:
+    #  - "host.docker.internal:host-gateway"

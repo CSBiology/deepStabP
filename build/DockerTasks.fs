@@ -51,26 +51,31 @@ let dockerTest = BuildTask.createFn "DockerTest" [] (fun config ->
 
 /// Must login into "csbdocker" docker account
 let dockerPublish = BuildTask.createFn "DockerPublish" [] (fun config ->
-    let r = ProjectInfo.release
-    let dockerTagImage() =
-        // tag api
-        run docker $"tag {ImageName_api}:latest {ImageName_api_remote}:{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}" ""
-        run docker $"tag {ImageName_api}:latest {ImageName_api_remote}:latest" ""
-        // tag ui
-        run docker $"tag {ImageName_ui}:latest {ImageName_ui_remote}:{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}" ""
-        run docker $"tag {ImageName_ui}:latest {ImageName_ui_remote}:latest" ""
-    let dockerPushImage() =
-        // push api
-        run docker $"push {ImageName_api_remote}:{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}" ""
-        run docker $"push {ImageName_api_remote}:latest" ""
-        // push ui
-        run docker $"push {ImageName_ui_remote}:{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}" ""
-        run docker $"push {ImageName_ui_remote}:latest" ""
-    Trace.trace $"Tagging image with :latest and :{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}"
-    dockerTagImage()
-    Trace.trace $"Pushing image to dockerhub with :latest and :{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}"
-    dockerPushImage()
-    ()
+    let check = Fake.Core.UserInput.getUserInput($"Do you want to publish to docker-hub? (y/yes/true)" )
+    match check.ToLower() with
+    | "y" | "yes" | "true" ->
+        let r = ProjectInfo.release
+        let api_semver = {|Major = "1"; Minor = "0"; Patch = "0"|}
+        let dockerTagImage() =
+            // tag api
+            run docker $"tag {ImageName_api}:latest {ImageName_api_remote}:{api_semver.Major}.{api_semver.Minor}.{api_semver.Patch}" ""
+            run docker $"tag {ImageName_api}:latest {ImageName_api_remote}:latest" ""
+            // tag ui
+            run docker $"tag {ImageName_ui}:latest {ImageName_ui_remote}:{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}" ""
+            run docker $"tag {ImageName_ui}:latest {ImageName_ui_remote}:latest" ""
+        let dockerPushImage() =
+            // push api
+            run docker $"push {ImageName_api_remote}:{api_semver.Major}.{api_semver.Minor}.{api_semver.Patch}" ""
+            run docker $"push {ImageName_api_remote}:latest" ""
+            // push ui
+            run docker $"push {ImageName_ui_remote}:{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}" ""
+            run docker $"push {ImageName_ui_remote}:latest" ""
+        Trace.trace $"Tagging image with :latest and :{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}"
+        dockerTagImage()
+        Trace.trace $"Pushing image to dockerhub with :latest and ui:{r.SemVer.Major}.{r.SemVer.Minor}.{r.SemVer.Patch}, api:{api_semver.Major}.{api_semver.Minor}.{api_semver.Patch}"
+        dockerPushImage()
+    | _ ->
+        Trace.trace "Exit DockerPublish task."
 )
 
 [<Literal>]

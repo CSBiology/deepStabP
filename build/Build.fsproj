@@ -20,6 +20,7 @@
   <ItemGroup>
       <PackageReference Include="BlackFox.Fake.BuildTask" Version="0.1.3" />
       <PackageReference Include="Fake.Core.Target" Version="5.23.1" />
+      <PackageReference Include="Fake.Core.UserInput" Version="5.23.1" />
       <PackageReference Include="Fake.IO.FileSystem" Version="5.23.1" />
       <PackageReference Include="Farmer" Version="1.7.13" />
       <PackageReference Include="Fake.Extensions.Release" Version="0.3.1" />
