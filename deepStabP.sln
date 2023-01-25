@@ -41,7 +41,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{BD8D11FE-E04
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{5177416D-117D-4540-ADB8-49D4CC154A4C}"
 	ProjectSection(SolutionItems) = preProject
-		src\Api\app\dependencies.py = src\Api\app\dependencies.py
 		src\Api\app\main.py = src\Api\app\main.py
 		src\Api\app\predictor.py = src\Api\app\predictor.py
 	EndProjectSection

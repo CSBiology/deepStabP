@@ -18,30 +18,14 @@ Before you run the project **for the first time only** you must install dotnet "
 dotnet tool restore
 ```
 
-To concurrently run the server and the client components in watch mode use the following command:
+To concurrently run the server, client and the python fastapi components in watch mode use the following command:
 
 ```bash
-/build.cmd
+./build.cmd
 ```
 
-Then open `http://localhost:8080` in your browser.
+Then open `http://localhost:8080` in your browser for the web ui and `http://localhost:8000/docs` for the python api OpenApi docs.
 
-The build project in root directory contains a couple of different build targets. You can specify them after `--` (target name is case-insensitive).
-
-To run concurrently server and client tests in watch mode (you can run this command in parallel to the previous one in new terminal):
-
-```bash
-dotnet run -- RunTests
-```
-
-Client tests are available under `http://localhost:8081` in your browser and server tests are running in watch mode in console.
-
-Finally, there are `Bundle` and `Azure` targets that you can use to package your app and deploy to Azure, respectively:
-
-```bash
-dotnet run -- Bundle
-dotnet run -- Azure
-```
 
 ## Docker
 
@@ -50,3 +34,19 @@ dotnet run -- Azure
 - **DEEPSTABP_URL**: Sets the url for the api predictor backend.
 
   Default: *"http://localhost:8000"*
+
+### Publish
+
+1. Before publishing make sure to commit all changes and update the version with
+
+   `./build.cmd releasenotes semver:xxx`, where xxx is the required version [major|minor|patch].
+2. If the backend api was changed update the static version string in `src/api/app/main.py` **predictor_version**.
+3. Use `./build.cmd dockerbundle [--uionly]` to create new docker images
+4. Use `./build.cmd dockertest [--uionly]` to run both images for testing.
+
+   This might take some time as the api image will downloag ~7GB model.
+   Use the `--uionly` option to only bundle/test the ui and not the api.
+5. Use `./build.cmd dockerpublish`, after logging into the csbdocker account (docker login) to push both images to dockerhub
+6. Use `./build.cmd dockertestproduction` to pull and test both images from remote as docker compose stack.
+
+   Ui will be accessible on `localhost:5000` and api on `localhost:8000`
