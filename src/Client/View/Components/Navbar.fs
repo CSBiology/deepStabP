@@ -51,23 +51,23 @@ let Navbar (model : Model) (dispatch : Msg -> unit) =
                         //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = HowToUse then NoHelp else HowToUse) |> dispatch)]
                         //Navbar.Item.IsActive (currentDisp = HowToUse)
                     ] [
-                    str "Lorem"
+                    str "Predict"
                 ]
                 Navbar.Item.a
                     [
                         //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = InputFormat then NoHelp else InputFormat) |> dispatch)]
                         //Navbar.Item.IsActive (currentDisp = InputFormat)
                     ] [
-                    str "Ipsum"
+                    str "About"
+                ]
 
-                ]
-                Navbar.Item.a
-                    [
-                        //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = TechnicalScientificDetails then NoHelp else TechnicalScientificDetails) |> dispatch)]
-                        //Navbar.Item.IsActive (currentDisp = TechnicalScientificDetails)
-                    ] [
-                    str "Dolor"
-                ]
+                // Navbar.Item.a
+                //     [
+                //         //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = TechnicalScientificDetails then NoHelp else TechnicalScientificDetails) |> dispatch)]
+                //         //Navbar.Item.IsActive (currentDisp = TechnicalScientificDetails)
+                //     ] [
+                //     str "Dolor"
+                // ]
             ]
             Navbar.End.div [] [
                 Navbar.Item.a
