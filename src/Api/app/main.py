@@ -14,7 +14,7 @@ tags_metadata = [
     },
 ]
 
-predictor_version = "1.0.0"
+predictor_version = "1.0.1"
 
 app = FastAPI(
     openapi_tags=tags_metadata
