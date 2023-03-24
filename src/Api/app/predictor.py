@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from io import StringIO
+import sys
 
 #function to convert the fasta sequence into the embeddingns with a lenght of 1024 (the returned embedding is the mean of all amino acid embeddings of the sequence)
 def new_features (features, model, tokenizer):
@@ -90,23 +91,92 @@ def create_dataframe (fasta, lycell, growth):
     else:
         lysate = 0
         cell = 1
-    with StringIO(fasta) as fastq_io:
-        genome = SeqIO.parse (fastq_io, 'fasta')
-        for x,fasta in enumerate (genome):
-            name, sequence = fasta.id, str(fasta.seq)
-            name = name.split('|')[1]
-            sequence = sequence.replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
+    if (">" in fasta):
+        with StringIO(fasta) as fastq_io:
+            genome = SeqIO.parse (fastq_io, 'fasta')
+            for x,fasta in enumerate (genome):
+                name, sequence = fasta.id, str(fasta.seq)
+                if (sequence):
+                    try:
+                        name = name.split('|')[1]
+                    except:
+                        name = name
+                    if sequence.isalpha():
+                        sequence = sequence.upper().replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
+                        sequence = list (sequence)
+                        sequence = ' '.join (sequence)
+                        sequence = [sequence]
+                        if x == 0:
+                            df_dict = {'Protein':name, 'feature':[sequence]}
+                            dataframe = pd.DataFrame (df_dict)
+                        else:
+                            df_dict = {'Protein':name, 'feature':[sequence]}
+                            new_df2 = pd.DataFrame (df_dict)
+                            dataframe = pd.concat ((dataframe, new_df2))
+                    else:
+                        print ('''No valid file format found. Supportet are:
+        Fasta format (including a header starting with ">" followed by a new line with the sequence):
+        Example:
+        >'>sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
+        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
+        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
+
+        or pure amino acid sequences (only ONE sequence is supported):
+        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
+        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
+        ''')
+                        sys.exit
+                else:
+                    sequence = name
+                    name = "No Name"
+                    if sequence.isalpha():
+                        sequence = sequence.upper().replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
+                        sequence = list (sequence)
+                        sequence = ' '.join (sequence)
+                        sequence = [sequence]
+                        if x == 0:
+                            df_dict = {'Protein':name, 'feature':[sequence]}
+                            dataframe = pd.DataFrame (df_dict)
+                        else:
+                            df_dict = {'Protein':name, 'feature':[sequence]}
+                            new_df2 = pd.DataFrame (df_dict)
+                            dataframe = pd.concat ((dataframe, new_df2))
+                    else:
+                        print ('''No valid file format found. Supportet are:
+        Fasta format (including a header starting with ">" followed by a new line with the sequence):
+        Example:
+        >'>sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
+        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
+        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
+
+        or pure amino acid sequences (only ONE sequence is supported):
+        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
+        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
+        ''')
+                        sys.exit
+    else:
+        if fasta.isalpha():
+            fasta = fasta.upper()
+            sequence = fasta.replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
             sequence = list (sequence)
             sequence = ' '.join (sequence)
             sequence = [sequence]
-            if x == 0:
-                df_dict = {'Protein':name, 'feature':[sequence]}
-                dataframe = pd.DataFrame (df_dict)
-            else:
-                df_dict = {'Protein':name, 'feature':[sequence]}
-                new_df2 = pd.DataFrame (df_dict)
-                dataframe = pd.concat ((dataframe, new_df2))
-    dataframe['growth_feature'] = growth_temp
+            df_dict = {'Protein':None, 'feature':[sequence]}
+            dataframe = pd.DataFrame (df_dict)
+        else:
+            print ('''No valid file format found. Supportet are:
+        Fasta format (including a header starting with ">" followed by a new line with the sequence):
+        Example:
+        >'>sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
+        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
+        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
+
+        or pure amino acid sequences (only ONE sequence is supported):
+        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
+        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
+        ''')
+            sys.exit
+    dataframe['growth_feature'] = growth_temp  
     dataframe['lysate'] = lysate
     dataframe['cell'] = cell
     return dataframe
