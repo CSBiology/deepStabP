@@ -9,6 +9,28 @@ import pytorch_lightning as pl
 from io import StringIO
 import sys
 
+string_no_valid_format = '''No valid file format found. Supportet are:
+        Fasta format (including a header starting with ">" followed by a new line with the sequence):
+        Example:
+        >sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
+        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
+        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
+
+        or pure amino acid sequences (only ONE sequence is supported):
+        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
+        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
+        
+        You can also only use amino acid sequences with a maximum length of 10000 amino acids. 
+        Addtionaly make sure that you do not include any non alphabetic letters in the amino acid sequence as this will also terminate your request.
+        If you want to pass in multiple pure amino acid seqeunces that are not in the fasta format, you must use the following format:
+        > some descriptive name
+        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLSSRQKRLARILHRIL
+        RPNLKNGCKFSADEERTVIELQSEFGN
+        > next descriptive name
+        FSADEERTVIELQSEFGNKWARIATYLPGR
+        and so on
+        '''
+
 #function to convert the fasta sequence into the embeddingns with a lenght of 1024 (the returned embedding is the mean of all amino acid embeddings of the sequence)
 def new_features (features, model, tokenizer):
     device = torch.device('cpu')
@@ -102,6 +124,9 @@ def create_dataframe (fasta, lycell, growth):
                     except:
                         name = name
                     if sequence.isalpha():
+                        if len(sequence)>10000:
+                            print (string_no_valid_format)
+                            sys.exit
                         sequence = sequence.upper().replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
                         sequence = list (sequence)
                         sequence = ' '.join (sequence)
@@ -114,22 +139,15 @@ def create_dataframe (fasta, lycell, growth):
                             new_df2 = pd.DataFrame (df_dict)
                             dataframe = pd.concat ((dataframe, new_df2))
                     else:
-                        print ('''No valid file format found. Supportet are:
-        Fasta format (including a header starting with ">" followed by a new line with the sequence):
-        Example:
-        >'>sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
-        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-
-        or pure amino acid sequences (only ONE sequence is supported):
-        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-        ''')
+                        print (string_no_valid_format)
                         sys.exit
                 else:
                     sequence = name
                     name = "No Name"
                     if sequence.isalpha():
+                        if len(sequence)>10000:
+                            print (string_no_valid_format)
+                            sys.exit
                         sequence = sequence.upper().replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
                         sequence = list (sequence)
                         sequence = ' '.join (sequence)
@@ -142,39 +160,22 @@ def create_dataframe (fasta, lycell, growth):
                             new_df2 = pd.DataFrame (df_dict)
                             dataframe = pd.concat ((dataframe, new_df2))
                     else:
-                        print ('''No valid file format found. Supportet are:
-        Fasta format (including a header starting with ">" followed by a new line with the sequence):
-        Example:
-        >'>sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
-        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-
-        or pure amino acid sequences (only ONE sequence is supported):
-        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-        ''')
+                        print (string_no_valid_format)
                         sys.exit
     else:
         if fasta.isalpha():
             fasta = fasta.upper()
+            if len(sequence)>10000:
+                print (string_no_valid_format)
+                sys.exit
             sequence = fasta.replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
             sequence = list (sequence)
             sequence = ' '.join (sequence)
             sequence = [sequence]
-            df_dict = {'Protein':None, 'feature':[sequence]}
+            df_dict = {'Protein':"No name", 'feature':[sequence]}
             dataframe = pd.DataFrame (df_dict)
         else:
-            print ('''No valid file format found. Supportet are:
-        Fasta format (including a header starting with ">" followed by a new line with the sequence):
-        Example:
-        >'>sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
-        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-
-        or pure amino acid sequences (only ONE sequence is supported):
-        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-        ''')
+            print (string_no_valid_format)
             sys.exit
     dataframe['growth_feature'] = growth_temp  
     dataframe['lysate'] = lysate
@@ -194,7 +195,6 @@ def determine_tm (dataframe, transformer, tm_predicter, new_features, tokenizer)
     output_df = pd.DataFrame ({'Protein':protein, 'Tm':output})
     output_df['Tm'] = output_df['Tm']*(97.4166905791789-30.441673997070385)+30.441673997070385
     output_df = output_df.to_records(index=False)
-    # https://stackoverflow.com/questions/71102658/how-can-i-return-a-numpy-array-using-fastapi
     output_df = output_df.tolist()
     return output_df
 
