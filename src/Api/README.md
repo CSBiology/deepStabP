@@ -11,7 +11,7 @@ Info for future development and maintenance
 
 ## Run Locally
 
-- `uvicorn app.main:app --reload`. Also run by `/build.cmd` together with the full stack.
+- `uvicorn app.main:app --reload`. Also run by `./build.cmd` together with the full stack.
 
 Default port is `localhost:8000`
 

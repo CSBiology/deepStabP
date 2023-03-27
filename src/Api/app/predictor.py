@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 from io import StringIO
 import sys
+import re
 
 string_no_valid_format = '''No valid file format found. Supportet are:
         Fasta format (including a header starting with ">" followed by a new line with the sequence):
@@ -163,9 +164,10 @@ def create_dataframe (fasta, lycell, growth):
                         print (string_no_valid_format)
                         sys.exit
     else:
+        fasta = re.sub(r"[\n\t\s]*", "", fasta)
         if fasta.isalpha():
             fasta = fasta.upper()
-            if len(sequence)>10000:
+            if len(fasta)>10000:
                 print (string_no_valid_format)
                 sys.exit
             sequence = fasta.replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
