@@ -22,7 +22,7 @@ let private update (state:NavbarState) (msg:NavbarMsg) =
 
 [<ReactComponent>]
 let Navbar (model : Model) (dispatch : Msg -> unit) =
-    let (state, dispatch) = React.useReducer(update, NavbarState.init)
+    let (state, dispatch_inner) = React.useReducer(update, NavbarState.init)
 
     //let currentDisp = model.InformationSectionDisplay
     Navbar.navbar [Navbar.IsFixedTop; Navbar.CustomClass "is-dark csbNav"; Navbar.Props [Props.Role "navigation"; AriaLabel "main navigation" ]] [
@@ -36,7 +36,7 @@ let Navbar (model : Model) (dispatch : Msg -> unit) =
                     Role "button"
                     AriaLabel "menu"
                     AriaExpanded false
-                    OnClick (fun _ -> Update_NavbarMenuActive (not state.NavbarMenuActive) |> dispatch)
+                    OnClick (fun _ -> Update_NavbarMenuActive (not state.NavbarMenuActive) |> dispatch_inner)
                 ]
             ] [
                 span [AriaHidden true] []
@@ -48,26 +48,25 @@ let Navbar (model : Model) (dispatch : Msg -> unit) =
             Navbar.Start.div [] [
                 Navbar.Item.a
                     [
-                        //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = HowToUse then NoHelp else HowToUse) |> dispatch)]
-                        //Navbar.Item.IsActive (currentDisp = HowToUse)
+                        Navbar.Item.Props [OnClick (fun _ -> UpdatePage Page.Main |> dispatch)]
+                        Navbar.Item.IsActive (model.Page = Page.Main)
                     ] [
                     str "Predict"
                 ]
                 Navbar.Item.a
                     [
-                        //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = InputFormat then NoHelp else InputFormat) |> dispatch)]
-                        //Navbar.Item.IsActive (currentDisp = InputFormat)
+                        Navbar.Item.Props [OnClick (fun _ -> UpdatePage Page.About |> dispatch)]
+                        Navbar.Item.IsActive (model.Page = Page.About)
                     ] [
                     str "About"
                 ]
-
-                // Navbar.Item.a
-                //     [
-                //         //Navbar.Item.Props [OnClick (fun _ -> ChangeHelpDisplay (if currentDisp = TechnicalScientificDetails then NoHelp else TechnicalScientificDetails) |> dispatch)]
-                //         //Navbar.Item.IsActive (currentDisp = TechnicalScientificDetails)
-                //     ] [
-                //     str "Dolor"
-                // ]
+                Navbar.Item.a
+                    [
+                        Navbar.Item.Props [OnClick (fun _ -> UpdatePage Page.PrivacyPolicy |> dispatch)]
+                        Navbar.Item.IsActive (model.Page = Page.PrivacyPolicy)
+                    ] [
+                    str "Privacy Policy"
+                ]
             ]
             Navbar.End.div [] [
                 Navbar.Item.a

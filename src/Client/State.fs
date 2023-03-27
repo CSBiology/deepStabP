@@ -28,18 +28,27 @@ type Versions = {
         Api = ""
     }
 
+[<RequireQualifiedAccess>]
+type Page =
+| Main
+| About
+| PrivacyPolicy
+
 type Model = {
     Version         : Versions
     Result          : DeepStabP.Types.PredictorResponse []
     HasJobRunning   : bool
+    Page            : Page
 } with
     static member init = {
         Version         = Versions.init
         Result          = Array.empty
         HasJobRunning   = false
+        Page            = Page.Main
     }
 
 type Msg =
+    | UpdatePage                        of Page
     | GetVersionUIRequest
     | GetVersionUIResponse              of string
     | GetVersionApiRequest

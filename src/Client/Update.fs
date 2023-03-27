@@ -18,6 +18,11 @@ open Feliz.SweetAlert
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
+    | UpdatePage nextPage ->
+        let nextModel = {
+            model with Page = nextPage
+        }
+        nextModel, Cmd.none
     | GetVersionUIRequest ->
         let cmd =
             Cmd.OfAsync.perform

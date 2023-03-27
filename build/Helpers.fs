@@ -94,7 +94,8 @@ let pip =
 
     createProcess pipPath
 
-let uvicorn = createProcess "uvicorn"
+let python = createProcess "python"
+let uvicorn msg = python (sprintf "-m uvicorn %s" msg)
 
 let docker =
     let path =
