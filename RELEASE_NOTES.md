@@ -1,3 +1,15 @@
+### 1.0.0+124b55b (Released 2023-3-28)
+* Additions:
+    * [[#1a2c799](https://github.com/CSBiology/deepStabP/commit/1a2c79906b741a72e4a571c5fc15a754ac348606)] Update predictor.py
+    * [[#7188523](https://github.com/CSBiology/deepStabP/commit/7188523035496cdb29638dcf3b0dd3ce53f182d8)] Update main.py
+    * [[#9b695e1](https://github.com/CSBiology/deepStabP/commit/9b695e17a7972c886a6f3e4b2dbe7b9f382c8510)] Updated predictor.py
+    * [[#3ef6aed](https://github.com/CSBiology/deepStabP/commit/3ef6aed5cffff25df6f65e1ca4317307c9d323c9)] Update README.md
+    * [[#b8baaba](https://github.com/CSBiology/deepStabP/commit/b8baaba0265de54fd8fc4e1588394d92b7944e5b)] Allow different input types for mt prediction :sparkles:
+    * [[#10a18b2](https://github.com/CSBiology/deepStabP/commit/10a18b21a838cc4aed13554b474b679e9f4156c1)] Add content + subpages :sparkles:
+    * [[#634c8f7](https://github.com/CSBiology/deepStabP/commit/634c8f7d7b2d5bf72a3ca40a75060ade305b5f86)] Add rich search information
+    * [[#69d2c16](https://github.com/CSBiology/deepStabP/commit/69d2c165133df293c0dbf6d20489e9422ca14398)] Add contact information #3
+    * [[#124b55b](https://github.com/CSBiology/deepStabP/commit/124b55bfcd883d4d7bbf9f507437c599e6f44656)] Add examples dropdown :sparkles:#4
+
 ### 0.1.0+e111d1c (Released 2023-3-17)
 * Additions:
     * [[#e111d1c](https://github.com/CSBiology/deepStabP/commit/e111d1cf82ae8ee122254a7eca44366d5c8368cd)] Update MainView text and Navbar text
