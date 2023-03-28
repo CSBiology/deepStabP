@@ -14,6 +14,7 @@
         <Compile Include="View\Content\Main.fs" />
         <Compile Include="View\Content\About.fs" />
         <Compile Include="View\Content\PrivacyPolicy.fs" />
+        <Compile Include="View\Content\Contact.fs" />
         <Compile Include="View\Components\SweetAlertModals.fs" />
         <Compile Include="View\Components\ResultModal.fs" />
         <Compile Include="View\Components\Footer.fs" />

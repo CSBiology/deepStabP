@@ -14,6 +14,7 @@ let hero (model : Model) (dispatch : Msg -> unit) =
                 | Page.Main -> Content.Main.view
                 | Page.About -> Content.About.view
                 | Page.PrivacyPolicy -> Content.PrivacyPolicy.view
+                | Page.Contact -> Content.Contact.view
             ]
         ]
     ]

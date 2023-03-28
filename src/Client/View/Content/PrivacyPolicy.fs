@@ -38,9 +38,19 @@ let view =
             Html.p """We reserve the right to change this privacy policy from time to time. Changes will be published on the Website. Please check the privacy policy regularly to stay up-to-date."""
 
             header2 "7. Contact"
-            Html.p """If you have any questions or concerns regarding this privacy policy, please contact us at [email address or contact form]."""
+            Html.p [
+                prop.children [
+                    Html.text """If you have any questions or concerns regarding this privacy policy, please contact us via """
+                    Html.a [
+                        Bulma.color.hasTextLinkLight
+                        prop.href Shared.Emails.MainContact
+                        prop.text "email"
+                    ]
+                    Html.text "."
+                ]
+            ]
 
-            Html.p """Last updated: 27.03.2023"""
+            Html.p """Last updated: 28.03.2023"""
         ]
     ]
 

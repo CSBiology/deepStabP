@@ -33,6 +33,7 @@ type Page =
 | Main
 | About
 | PrivacyPolicy
+| Contact
 
 type Model = {
     Version         : Versions

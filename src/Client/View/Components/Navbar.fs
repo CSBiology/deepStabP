@@ -67,6 +67,13 @@ let Navbar (model : Model) (dispatch : Msg -> unit) =
                     ] [
                     str "Privacy Policy"
                 ]
+                Navbar.Item.a
+                    [
+                        Navbar.Item.Props [OnClick (fun _ -> UpdatePage Page.Contact |> dispatch)]
+                        Navbar.Item.IsActive (model.Page = Page.Contact)
+                    ] [
+                    str "Contact"
+                ]
             ]
             Navbar.End.div [] [
                 Navbar.Item.a
