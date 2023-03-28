@@ -9,50 +9,11 @@ open DeepStabP.Types
 
 //https://zaid-ajaj.github.io/Feliz/#/Hooks/UseElmish
 
-open State
-
-module private State =
-
-    type SeqMode =
-    | Single
-    | Fasta
-
-    type InputState = {
-        SeqMode             : SeqMode option
-        SingleSequence      : string
-        HasValidFasta       : bool
-        FastaFileName       : string
-        FastaFileData       : string
-        InvalidFastaChars   : char list
-        MT_Mode             : MT_Mode
-        GrowthTemperature   : float
-    } with
-        static member init = {
-            SeqMode             = None
-            SingleSequence      = ""
-            HasValidFasta       = false
-            FastaFileName       = ""
-            FastaFileData       = ""
-            InvalidFastaChars   = List.empty
-            MT_Mode             = MT_Mode.Lysate
-            GrowthTemperature   = 22.
-        }
-
-    type InputMsg =
-    | Reset
-    | RemoveFasta
-    | UpdateSeqMode                 of SeqMode option
-    | UpdateMT_Mode                 of MT_Mode
-    | UpdateGrowthTemp              of float
-    | SingleSequenceInput_Handler   of string
-    | FastaUpload_Handler           of string * string
-    | FastaValidation               of Result<string,char list>
+open State.Input
 
 module private Update =
 
-    open State
-
-    let init() = State.InputState.init, Cmd.none
+    let init() = InputState.init, Cmd.none
 
     let validateFastaText (fsa:string) =
         let allSeqs =
@@ -90,9 +51,9 @@ module private Update =
             { state with MT_Mode = mode }, Cmd.none
         | UpdateGrowthTemp gt ->
             { state with GrowthTemperature = gt }, Cmd.none
-        | SingleSequenceInput_Handler (str) ->
-            let mode = if str <> "" then Some Single else None
-            let nextState = {state with SingleSequence = str; SeqMode = mode}
+        | SequenceInput_Handler (str) ->
+            let mode = if str <> "" then Some Sequence else None
+            let nextState = {state with Sequence = str; SeqMode = mode}
             let validateCmd =
                 Cmd.OfFunc.perform
                     validateFastaText
@@ -100,7 +61,7 @@ module private Update =
                     FastaValidation
             nextState, validateCmd
         | FastaUpload_Handler (fileData,fileName) -> 
-            let mode = if fileData.Length <> 0 then Some Fasta else None
+            let mode = if fileData.Length <> 0 then Some File else None
             let nextState = {
                 state with
                     FastaFileData = fileData
@@ -127,14 +88,14 @@ open State
 let private validateInputState (versions: State.Versions) (state:InputState) =
     let validateInput() =
         match state.SeqMode with
-        | Some Single ->
-            match state.SingleSequence with
+        | Some Sequence ->
+            match state.Sequence with
             | "" -> false, "No data provided"
             | _ ->
                 match state.HasValidFasta with
                 | false -> false, "Fasta is invalid"
                 | _ -> true, "Start computation"
-        | Some Fasta -> 
+        | Some File -> 
             match state.FastaFileData with
             | "" -> false, "No data provided"
             | x when x.Split([|'>'|],System.StringSplitOptions.RemoveEmptyEntries).Length > 1000 ->
@@ -151,6 +112,7 @@ let private validateInputState (versions: State.Versions) (state:InputState) =
     | noApiConnection when versions.Api = "" ->
         false, "No connection to predictor service"
     | _ -> validateInput()
+
 module private UploadHandler =
     open Fable.Core.JsInterop
 
@@ -207,17 +169,18 @@ let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
         ]
     ] [
         match state.SeqMode with
-        | Some Single | None ->
+        | Some Sequence | None ->
             Textarea.textarea [
                 Textarea.Color IsInfo
                 Textarea.Size Size.IsMedium   
-                Textarea.Placeholder "insert a single amino acid sequence in FASTA format (with or without header)"
+                Textarea.Placeholder "Insert amino acid sequence(s) in FASTA format (with or without header)"
+                Textarea.ValueOrDefault state.Sequence
                 Textarea.OnChange (fun e ->
-                    let sequence = e.Value//!!e.target?value
-                    SingleSequenceInput_Handler sequence |> setState
+                    let sequence = e.Value
+                    SequenceInput_Handler sequence |> setState
                 )
             ] []
-        | Some Fasta ->
+        | Some File ->
             File.file [File.IsBoxed;File.IsFullWidth;File.HasName] [
                 File.Label.label [ ] [
                     File.input [ Props [
@@ -257,8 +220,8 @@ let private inputLeft (isValidState:bool) (state: InputState) (setState: InputMs
 
     let leftHeader,leftAlternative =
         match state.SeqMode with 
-        | Some Single | None -> "Or upload a ", "file"
-        | Some Fasta -> "Or insert a single amino acid ", "sequence"
+        | Some Sequence | None -> "Or upload a ", "file"
+        | Some File -> "Or insert amino acid ", "sequence(s)"
 
     Column.column [Column.Width (Screen.Desktop, Column.Is7);Column.CustomClass "leftSelector"] [
         Heading.h3 [] [str "Input"]
@@ -268,14 +231,20 @@ let private inputLeft (isValidState:bool) (state: InputState) (setState: InputMs
             p [Class "is-danger"] [str (sprintf "%A" state.InvalidFastaChars)   ]
             Button.button [Button.CustomClass "is-danger";Button.OnClick (fun _ -> Reset |> setState)] [str "Click to reset Input"]
         modeSelection state setState
+        Html.span [
+            prop.style [style.float'.left]
+            prop.children [
+                Client.Components.Examples.Main setState
+            ]
+        ]
         Heading.h5 [Heading.IsSubtitle] [
             str leftHeader
             a [ Class "leftAlternative"
                 Props.OnClick
                     (fun _ ->
                         match state.SeqMode with 
-                        | Some Single | None -> UpdateSeqMode (Some Fasta) |> setState
-                        | Some Fasta -> UpdateSeqMode (Some Single) |> setState
+                        | Some Sequence | None -> UpdateSeqMode (Some File) |> setState
+                        | Some File -> UpdateSeqMode (Some Sequence) |> setState
                     )] [
                 str leftAlternative
             ]
@@ -323,7 +292,7 @@ let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (butto
                 Button.CustomClass "startBtn"
                 Button.OnClick (fun _ ->
                     if isValidState then
-                        let fasta = if state.SeqMode = Some SeqMode.Single then state.SingleSequence else state.FastaFileData 
+                        let fasta = if state.SeqMode = Some SeqMode.Sequence then state.Sequence else state.FastaFileData 
                         let info = DeepStabP.Types.PredictorInfo.create state.GrowthTemperature state.MT_Mode fasta
                         PredictionRequest info |> dispatch
                 )

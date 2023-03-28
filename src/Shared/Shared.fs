@@ -11,6 +11,9 @@ module Urls =
     [<LiteralAttribute>]
     let GitHubRepo = "https://github.com/CSBiology/deepStabP"
 
+    [<LiteralAttribute>]
+    let GitHubFormatInfo = "https://github.com/CSBiology/deepStabP#supported-formats"
+
 module Emails =
 
     /// "timo.muehlhaus@rptu.de", obfuscated by https://www.email-obfuscator.com
