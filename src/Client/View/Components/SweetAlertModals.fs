@@ -43,7 +43,7 @@ module private ResultModal_success =
                         Html.thead [Html.tr [
                             Html.th "index"
                             Html.th "Protein"
-                            Html.th "mt"
+                            Html.th "Melting temperature [°C]"
                         ]]
                         Html.tbody [
                             let arr = model.Results |> Array.ofList
