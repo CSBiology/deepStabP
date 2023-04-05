@@ -44,9 +44,9 @@ module private Update =
         match msg with
         | Reset -> init()
         | RemoveFasta ->
-            {state with FastaFileName = ""; FastaFileData = ""; HasValidFasta = false}, Cmd.none
+            { state with FastaFileName = ""; FastaFileData = Array.empty; FastaFileSize = 0 }, Cmd.none
         | UpdateSeqMode (mode) ->
-            { state with SeqMode = mode}, Cmd.none
+            { state with SeqMode = mode }, Cmd.none
         | UpdateMT_Mode mode ->
             { state with MT_Mode = mode }, Cmd.none
         | UpdateGrowthTemp gt ->
@@ -60,21 +60,20 @@ module private Update =
                     str
                     FastaValidation
             nextState, validateCmd
-        | FastaUpload_Handler (fileData,fileName) -> 
-            let mode = if fileData.Length <> 0 then Some File else None
+        | FastaUpload_Handler (fileData,fileName,fileSize) ->
+            if fileSize > 1000000 then
+                let msg = Client.Components.WarningModal.fileSizeIsLarge_msgBody fileSize
+                let modal = Client.Components.WarningModal.Main msg
+                ModalLogic.renderModal("WarningFileSize", modal)
+            let mode = Some File
             let nextState = {
                 state with
                     FastaFileData = fileData
                     FastaFileName = fileName
+                    FastaFileSize = fileSize
                     SeqMode = mode
                 }
-            let validateCmd =
-                Cmd.OfFunc.perform
-                    validateFastaText
-                    fileData
-                    FastaValidation
-
-            nextState,validateCmd
+            nextState, Cmd.none
         | FastaValidation (Ok _) ->
             let updatedModel = {state with HasValidFasta = true; InvalidFastaChars = []}
             updatedModel, Cmd.none
@@ -95,15 +94,11 @@ let private validateInputState (versions: State.Versions) (state:InputState) =
                 match state.HasValidFasta with
                 | false -> false, "Fasta is invalid"
                 | _ -> true, "Start computation"
-        | Some File -> 
-            match state.FastaFileData with
-            | "" -> false, "No data provided"
-            | x when x.Split([|'>'|],System.StringSplitOptions.RemoveEmptyEntries).Length > 1000 ->
-                false, "Too many sequences (>1000)."
-            | _ ->
-                match state.HasValidFasta with
-                | false -> false, "Fasta is invalid"
-                | _ -> true, "Start computation"
+        | Some File ->
+            if state.FastaFileData <> Array.empty then
+                true, "Start computation"
+            else
+                false, "Upload file"
         | None ->
             false, "No data provided"
     match versions with
@@ -115,10 +110,17 @@ let private validateInputState (versions: State.Versions) (state:InputState) =
 
 module private UploadHandler =
     open Fable.Core.JsInterop
+    open Fable.Remoting.Client
+    open Browser.Types
 
     [<Literal>]
     let id = "droparea"
-    let updateMsg = FastaUpload_Handler
+    let updateMsg (file:File) (setState: InputMsg -> unit) = async {
+        let! fileBytes = file.ReadAsByteArray()
+        let name = file.name
+        let size = file.size
+        return FastaUpload_Handler (fileBytes, name, size) |> setState
+    }
 
     let setActive_DropArea (id:string) =
         let ele = Browser.Dom.document.getElementById(id)
@@ -133,7 +135,7 @@ module private UploadHandler =
             let reader = Browser.Dom.FileReader.Create()
             let files : Browser.Types.File [] = e.target?files
             let file = files[0]
-            reader.onload <- (fun _ -> updateMsg (string reader.result, file.name) |> setState )
+            reader.onload <- (fun _ -> updateMsg file setState |> Async.StartImmediate)
 
             reader.readAsText(file)
 
@@ -146,7 +148,7 @@ module private UploadHandler =
                     setInActive_DropArea id
                     let file = item.getAsFile()
                     let reader = Browser.Dom.FileReader.Create()
-                    reader.onload <- (fun _ -> updateMsg (string reader.result, file.name) |> setState )
+                    reader.onload <- (fun _ -> updateMsg file setState |> Async.StartImmediate )
                     reader.readAsText(file)
 
 let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
@@ -192,7 +194,9 @@ let private modeSelection (state : InputState) (setState : InputMsg -> unit) =
                     ]
                     if state.FastaFileName <> "" then
                         File.name [Modifiers [Modifier.TextAlignment (Screen.All, TextAlignment.Centered)]] [
-                            str state.FastaFileName
+                            Html.span [
+                                Html.span state.FastaFileName
+                            ] 
                             Button.span [
                                 Button.OnClick (fun e ->
                                     e.preventDefault()
@@ -223,14 +227,19 @@ let private inputLeft (isValidState:bool) (state: InputState) (setState: InputMs
         | Some Sequence | None -> "Or upload a ", "file"
         | Some File -> "Or insert amino acid ", "sequence(s)"
 
+    let isEmpty =
+        match state.SeqMode with
+        | Some SeqMode.File -> state.FastaFileData = Array.empty
+        | Some SeqMode.Sequence -> state.Sequence = ""
+        | None -> true
+
     Column.column [Column.Width (Screen.Desktop, Column.Is7);Column.CustomClass "leftSelector"] [
         Heading.h3 [] [str "Input"]
         hr []
-        if (isValidState && not state.HasValidFasta) then
-            p [Class "is-danger"] [str "Your fasta contained invalid characters:"]
-            p [Class "is-danger"] [str (sprintf "%A" state.InvalidFastaChars)   ]
-            Button.button [Button.CustomClass "is-danger";Button.OnClick (fun _ -> Reset |> setState)] [str "Click to reset Input"]
         modeSelection state setState
+        if (not isValidState) && (not isEmpty) then
+            p [Class "is-danger"] [str "Your fasta contained invalid characters:"]
+            p [Class "is-danger"] [str (sprintf "%A" state.InvalidFastaChars)]
         Html.span [
             prop.style [style.float'.left]
             prop.children [
@@ -262,7 +271,21 @@ let private mtMode_checkbox (state:InputState) (setState: InputMsg -> unit) (mt_
         ]
     ]
 
-let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (buttonMsg:string) (state: InputState) (setState: InputMsg -> unit) (dispatch: Msg -> unit) =
+open Shared
+
+module PostFunctions =
+
+    let postDataString (d: string) (md: ProcessMetadata) dispatch = async {
+        let! output = Api.deepStabPApi.postDataString {metadata = md; data = d}
+        return output |> PostDataResponse |> dispatch
+    }
+
+    let postDataBytes (fileBytes: byte []) (md: ProcessMetadata) dispatch = async {
+        let! output = Api.deepStabPApi.postDataBytes {metadata = md; data = fileBytes}
+        return output |> PostDataResponse |> dispatch
+    }
+
+let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (buttonMsg:string) (state: InputState) (setState: InputMsg -> unit) (model:Model) (dispatch: Msg -> unit) =
     Column.column [Column.Width (Screen.Desktop, Column.Is5);Column.CustomClass "rightSelector"] [
         Heading.h3 [] [str "Start Prediction"]
         hr []
@@ -292,9 +315,11 @@ let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (butto
                 Button.CustomClass "startBtn"
                 Button.OnClick (fun _ ->
                     if isValidState then
-                        let fasta = if state.SeqMode = Some SeqMode.Sequence then state.Sequence else state.FastaFileData 
-                        let info = DeepStabP.Types.PredictorInfo.create state.GrowthTemperature state.MT_Mode fasta
-                        PredictionRequest info |> dispatch
+                        let md = ProcessMetadata.init(model.SessionId,state.MT_Mode,state.GrowthTemperature)
+                        match state.SeqMode with
+                        | Some SeqMode.Sequence -> PostFunctions.postDataString state.Sequence md dispatch |> Async.StartImmediate
+                        | Some SeqMode.File     -> PostFunctions.postDataBytes state.FastaFileData md dispatch |> Async.StartImmediate
+                        | None -> ()
                 )
             ] [str buttonMsg]
         ]
@@ -303,7 +328,7 @@ let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (butto
 open Update
 
 [<ReactComponent>]
-let View (versions: State.Versions) (hasJobRunning: bool) (dispatch : Msg -> unit) =
+let View (versions: State.Versions) (hasJobRunning: bool) (model:Model) (dispatch : Msg -> unit) =
     let state, setState = React.useElmish(init, update, [||])
 
     let isValidState, buttonMsg = validateInputState versions state
@@ -311,6 +336,6 @@ let View (versions: State.Versions) (hasJobRunning: bool) (dispatch : Msg -> uni
     div [Style [FlexGrow 1; Display DisplayOptions.Flex; FlexDirection "column"]] [
         Columns.columns [Columns.CustomClass "ProcessDecision"; Columns.Props [Style [FlexGrow 1]]] [
             inputLeft isValidState state setState
-            startPredictionRight hasJobRunning isValidState buttonMsg state setState dispatch
+            startPredictionRight hasJobRunning isValidState buttonMsg state setState model dispatch
         ]
     ]

@@ -9,9 +9,9 @@ module private ResultModal_success =
 
     open Fable.Core.JsInterop
 
-    let resultsToCsv (results: DeepStabP.Types.PredictorResponse []) =
+    let resultsToCsv (results: DeepStabP.Types.PredictorResponse list) =
         results
-        |> Array.map (fun x ->
+        |> List.map (fun x ->
             $"{x.Protein},{x.MeltingTemp}{System.Environment.NewLine}"
         )
         |> String.concat ""
@@ -46,10 +46,11 @@ module private ResultModal_success =
                             Html.th "mt"
                         ]]
                         Html.tbody [
-                            for i in 0 .. model.Result.Length-1 do
+                            let arr = model.Results |> Array.ofList
+                            for i in 0 .. model.Results.Length-1 do
                                 yield
                                     Html.tr [
-                                        let r = model.Result.[i]
+                                        let r = arr.[i]
                                         Html.td i
                                         Html.td r.Protein
                                         Html.td r.MeltingTemp
@@ -65,9 +66,10 @@ open ResultModal_success
 
 /// if more customization is needed one can fallback to ModalLogic
 let resultModal_success (model:State.Model)=
-    Cmd.Swal.fire([
+    let title = $"Success ({model.ChunkIndex+1}/{model.ChunkCount})"
+    [
         swal.icon.success
-        swal.title "Success"
+        swal.title title
         swal.html (body model)
         swal.showCloseButton true
         swal.showCancelButton true
@@ -83,8 +85,8 @@ let resultModal_success (model:State.Model)=
                     System.DateTime.UtcNow.ToString("yyyyMMdd_hhmmss")
                     "DeepStabP"
                 ] |> String.concat "_"
-            model.Result
+            model.Results
             |> resultsToCsv
             |> downloadResults fileName
         )
-    ])
+    ]

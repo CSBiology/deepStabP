@@ -6,21 +6,15 @@ import gc
 from ..predictor import *
 
 # mirrored in dotnet Shared/DeepStabP.Types.fs
+class FastaRecord(BaseModel):
+    header      : str
+    sequence    : str
+
+# mirrored in dotnet Shared/DeepStabP.Types.fs
 class PredictorInfo(BaseModel):
     growth_temp : int
     mt_mode     : str
-    fasta       : str
-
-# This is for local testing
-#variable= '''>sp|A0A178VEK7|DUO1_ARATH Transcription factor DUO1 OS=Arabidopsis thaliana OX=3702 GN=DUO1 PE=1 SV=1
-#MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-#RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-#NSSDASSSSFNPKSSSSHRLKGKNVKPIRQSSQGFGLVEEEVTVSSSCSQMVPYSSDQVG
-#DEVLRLPDLGVKLEHQPFAFGTDLVLAEYSDSQNDANQQAISPFSPESRELLARLDDPFY
-#YDILGPADSSEPLFALPQPFFEPSPVPRRCRHVSKDEEADVFLDDFPADMFDQVDPIPSP
-#>sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
-#MAQYHQQHEMKQTMAETQYVTAPPPMGYPVMMKDSPQTVQPPHEGQSKGSGGFLRGCLAA
-#MCCCCVLDCVF'''
+    fasta       : list[FastaRecord]
 
 router = APIRouter(
     prefix="/api/v1",

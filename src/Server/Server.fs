@@ -6,6 +6,8 @@ open Saturn
 open Giraffe
 open Shared
 open Microsoft.AspNetCore.Http
+open System.Collections.Generic
+open Microsoft.AspNetCore.Hosting
 
 let private errorHandler (ex:exn) (routeInfo:RouteInfo<HttpContext>) =
     let msg = sprintf "%s." ex.Message 
@@ -20,7 +22,9 @@ let serviceApi = {
 let deepStabPApi : IDeepStabPApi = {
     helloWorld = fun () -> DeepStabP.Api.helloWorldHandler()
     getVersion = fun () -> DeepStabP.Api.getVersionHandler()
-    predict = fun info -> DeepStabP.Api.postPredictHandler info
+    postDataBytes = fun prop -> DeepStabP.Api.postDataBytesHandler prop
+    postDataString = fun prop -> DeepStabP.Api.postDataStringHandler prop
+    getData = fun prop -> DeepStabP.Api.getDataHandler prop.session
 }
 
 let webApp_deepStabp =
@@ -44,6 +48,16 @@ let browserRouter = choose [
     webApp_deepStabp
 ]
 
+printfn "[STORAGE] data count: %i" Storage.data.Count
+printfn "[STORAGE] metadata count: %i" Storage.metaData.Count
+
+
+let webhost (config: IWebHostBuilder) : IWebHostBuilder =
+    config.UseKestrel(fun options ->
+        options.Limits.MaxRequestBodySize <- System.Nullable()
+        ()
+    )
+
 let app =
     application {
         url "http://0.0.0.0:5000"
@@ -51,6 +65,7 @@ let app =
         memory_cache
         use_static "public"
         use_gzip
+        webhost_config webhost
     }
 
 [<EntryPoint>]

@@ -16,8 +16,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
         prop.children [
             Client.Components.Navbar.Navbar model dispatch
             Client.View.MainView.hero model dispatch
-            ModalLogic.modalContainer
-            Client.View.InputView.View model.Version model.HasJobRunning dispatch
+            Client.View.InputView.View model.Version model.HasJobRunning model dispatch
             Client.Components.Footer.footer model.Version
         ]
     ]

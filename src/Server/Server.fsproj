@@ -5,6 +5,8 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Storage.fs" />
+    <Compile Include="FastaReader.fs" />
     <Compile Include="Environment.fs" />
     <None Include="paket.references" />
     <Compile Include="Api\DeepStabP.fs" />

@@ -2,6 +2,8 @@ module DeepStabP.Api
 
 open System.Net.Http
 open Newtonsoft.Json
+open DeepStabP.Types
+open FastaReader
 open Shared
 
 // Example for testing
@@ -38,25 +40,70 @@ let helloWorldHandler () =
 
 open DeepStabP.Types
 
-let postPredictHandler (info:PredictorInfo) =
-    task {
-        let url = DeepStabP_url_v1 + "/predict"
-        let requestJson = JsonConvert.SerializeObject(info, settings)
-        let content = new StringContent(requestJson,System.Text.Encoding.UTF8, "application/json")
-        let! world = httpClient.PostAsync(url, content)
-        let! content = world.Content.ReadAsStringAsync()
-        let response = JsonConvert.DeserializeObject<{| Prediction: seq<seq<obj>> |}>(content)
-        let responseParsed =
-            response.Prediction
-            |> Seq.map (fun x ->
-                PredictorResponse.create
-                    (Seq.item 0 x |> string)
-                    (Seq.item 1 x |> string |> float)
-            )
-            |> Array.ofSeq
-        return responseParsed
-    }
-    |> Async.AwaitTask
+let replaceLetters (str:string) = 
+    str
+    |> String.collect (fun c -> 
+        match c with
+        | '3' | '5' |'0' -> "X"
+        | '\n' | '\t' | ' ' -> ""
+        | _ -> string c
+    )
+
+let postDataBytesHandler (prop:Shared.PostDataBytes) = async {
+    let countChunks =
+        FastaRecord.ofFile prop.data // parse data to fasta
+        |> addToStorage prop.metadata // add to storage, return n of chunks
+    return countChunks
+}
+
+let postDataStringHandler (prop:Shared.PostDataString) = async {
+    let countChunks =
+        FastaRecord.ofString prop.data // parse data to fasta
+        |> addToStorage prop.metadata // add to storage, return n of chunks
+    return countChunks
+}
+
+let getDataHandler (guid:System.Guid) = 
+    let processChunk (info: PredictorInfo) =
+        task {
+            let url = DeepStabP_url_v1 + "/predict"
+            let requestJson = JsonConvert.SerializeObject(info, settings)
+            printfn "[REQUEST JSON] %s" requestJson
+            //let content = new StringContent(requestJson,System.Text.Encoding.UTF8, "application/json")
+            //let! request = httpClient.PostAsync(url, content)
+            //let! content = request.Content.ReadAsStringAsync()
+            //let response = JsonConvert.DeserializeObject<{| Prediction: seq<seq<obj>> |}>(content)
+            //let responseParsed =
+            //    response.Prediction
+            //    |> Seq.map (fun x ->
+            //        PredictorResponse.create(
+            //            Seq.item 0 x |> string,
+            //            Seq.item 1 x |> string |> float
+            //        )
+            //    )
+            //    |> Array.ofSeq
+            //return responseParsed
+            return [|for i in 0 .. 5 do yield PredictorResponse.create(sprintf "Test%i" i, float i)|]
+        } |> Async.AwaitTask
+    async {
+        try
+            printfn "[getData] start"
+            let md, d = getStorage guid
+            let chunkIndex = md.ChunkIndex
+            printfn "[getData] %A/%A" chunkIndex (md.ChunkCount - 1)
+            let chunk = d |> Seq.item chunkIndex
+            let predictorInfo = PredictorInfo.create(md.Growth_Temp, md.MT_Mode, chunk)
+            let! chunk_processed = processChunk predictorInfo
+            md.increaseChunkIndex() // increases chunk index by 1
+            // remove if all data processed, (md.ChunkCount - 1) because index is always -1 to length
+            if chunkIndex >= (md.ChunkCount - 1) then removeFromStorage guid |> ignore
+            printfn "[getData] end"
+            return {chunkIndex = chunkIndex; results = List.ofArray chunk_processed}
+        with
+            | ex ->
+                removeFromStorage guid |> ignore
+                return raise ex
+    } 
 
 let getVersionHandler () =
     task {

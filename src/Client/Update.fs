@@ -4,7 +4,7 @@ open Elmish
 open State
 
 let init () : Model * Cmd<Msg> =
-    let model = Model.init
+    let model = Model.init()
 
     let cmd =
         Cmd.batch [
@@ -43,21 +43,36 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | GetVersionApiResponse api_version ->
         let nextModel = {model with Version = {model.Version with Api = api_version}}
         nextModel, Cmd.none
-    | PredictionRequest info ->
-        let nextModel = {
-            model with HasJobRunning = true
-        }
+    | PostDataResponse (chunks) ->
+        let nextModel = { model with ChunkCount = chunks; Results = List.empty; ChunkIndex = 0 }
         let cmd =
             Cmd.OfAsync.either
-                Api.deepStabPApi.predict
-                info
-                (Ok >> PredictionResponse)
-                (Error >> PredictionResponse)
+                Api.deepStabPApi.getData
+                {|session = model.SessionId|}
+                (fun x -> GetDataRequest {|ChunkIndex = x.chunkIndex; Results = x.results|})
+                GetDataRequestError
         nextModel, cmd
-    | PredictionResponse (Ok response) ->
-        let nextModel = { model with HasJobRunning = false; Result = response }
+    | GetDataRequest prop ->
+        printfn "hit request"
+        let nextModel = { model with ChunkIndex = prop.ChunkIndex; Results = model.Results@prop.Results }
+        // Dont call again if all chunks are processed, (nextModel.ChunkCount - 1) because index is always -1 to length
         let modal = Client.Components.SweetAlertModals.resultModal_success(nextModel)
-        nextModel, modal
-    | PredictionResponse (Error e) ->
+        let modalCmd =
+            if Feliz.SweetAlert.Swal.isVisible() then
+                Cmd.Swal.update(modal)
+            else
+                Cmd.Swal.fire(modal)
+        if nextModel.ChunkIndex >= (nextModel.ChunkCount-1) then
+            let cmd = Cmd.none
+            let nextModel' = { nextModel with HasJobRunning = false }
+            nextModel', Cmd.batch [modalCmd; cmd]
+        else
+            let cmd =
+                Cmd.OfAsync.perform
+                    Api.deepStabPApi.getData
+                    {|session = model.SessionId|}
+                    (fun x -> GetDataRequest {|ChunkIndex = x.chunkIndex; Results = x.results|})
+            nextModel, Cmd.batch [modalCmd; cmd]
+    | GetDataRequestError e ->
         let nextModel = { model with HasJobRunning = false }
         nextModel, Cmd.Swal.Simple.error(e.GetPropagatedError())

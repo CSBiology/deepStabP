@@ -37,8 +37,15 @@ type HelloWorld = {
 
 open DeepStabP.Types
 
+// Sadly need these use-once-and-forget-about-them types, as anonymous record types cannot be shared between assemblies.
+type PostDataBytes = {metadata: ProcessMetadata; data: byte []}
+type PostDataString = {metadata: ProcessMetadata; data: string}
+type GetData_Response = {chunkIndex: int; results: PredictorResponse list}
+
 type IDeepStabPApi = {
     helloWorld: unit -> Async<HelloWorld>
     getVersion: unit -> Async<string>
-    predict: PredictorInfo -> Async<PredictorResponse []>
+    postDataBytes: PostDataBytes -> Async<int>
+    postDataString: PostDataString -> Async<int>
+    getData: {|session: Guid|} -> Async<GetData_Response>
 }

@@ -28,9 +28,11 @@ module Input =
         SeqMode             : SeqMode option
         /// Storage for string input in textarea
         Sequence            : string
+        /// Only used in Sequence mode, as fasta validation for file input is done on backend
         HasValidFasta       : bool
         FastaFileName       : string
-        FastaFileData       : string
+        FastaFileData       : byte []
+        FastaFileSize       : int
         InvalidFastaChars   : char list
         MT_Mode             : MT_Mode
         GrowthTemperature   : float
@@ -40,7 +42,8 @@ module Input =
             Sequence            = ""
             HasValidFasta       = false
             FastaFileName       = ""
-            FastaFileData       = ""
+            FastaFileData       = Array.empty
+            FastaFileSize       = 0
             InvalidFastaChars   = List.empty
             MT_Mode             = MT_Mode.Lysate
             GrowthTemperature   = 22.
@@ -53,7 +56,7 @@ module Input =
     | UpdateMT_Mode                 of MT_Mode
     | UpdateGrowthTemp              of float
     | SequenceInput_Handler         of string
-    | FastaUpload_Handler           of string * string
+    | FastaUpload_Handler           of data:byte [] * name:string * fileSize: int
     | FastaValidation               of Result<string,char list>
 
 type OrganismModel =
@@ -77,16 +80,24 @@ type Page =
 | Contact
 
 type Model = {
+    SessionId       : System.Guid
+    /// The current chunk
+    ChunkIndex      : int
+    /// The count of all chunks
+    ChunkCount      : int
+    Results         : DeepStabP.Types.PredictorResponse list
     Version         : Versions
-    Result          : DeepStabP.Types.PredictorResponse []
     HasJobRunning   : bool
     Page            : Page
 } with
-    static member init = {
-        Version         = Versions.init
-        Result          = Array.empty
+    static member init() = {
+        SessionId       = System.Guid.NewGuid()
+        Results         = List.empty
+        ChunkIndex      = 0
+        ChunkCount      = 0
         HasJobRunning   = false
         Page            = Page.Main
+        Version         = Versions.init
     }
 
 type Msg =
@@ -95,5 +106,9 @@ type Msg =
     | GetVersionUIResponse              of string
     | GetVersionApiRequest
     | GetVersionApiResponse             of string
-    | PredictionRequest                 of DeepStabP.Types.PredictorInfo
-    | PredictionResponse                of Result<DeepStabP.Types.PredictorResponse [],exn>
+    | PostDataResponse                  of ChunkCount:int
+    /// Uses the current chunk index to determine if it should be looped
+    | GetDataRequest                    of {|ChunkIndex: int; Results: DeepStabP.Types.PredictorResponse list|}
+    | GetDataRequestError               of exn
+    //| PredictionRequest                 of DeepStabP.Types.PredictorInfo
+    //| PredictionResponse                of Result<DeepStabP.Types.PredictorResponse [],exn>
