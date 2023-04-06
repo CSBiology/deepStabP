@@ -81,7 +81,7 @@ type Page =
 
 type Model = {
     SessionId           : System.Guid
-    /// The current chunk
+    /// The current chunk index, instead of None it is -1 as default
     ChunkIndex          : int
     /// The count of all chunks
     ChunkCount          : int
@@ -95,7 +95,7 @@ type Model = {
     static member init() = {
         SessionId           = System.Guid.NewGuid()
         Results             = List.empty
-        ChunkIndex          = 0
+        ChunkIndex          = -1
         ChunkCount          = 0
         KeepJobRunning      = false
         HasJobRunning       = false

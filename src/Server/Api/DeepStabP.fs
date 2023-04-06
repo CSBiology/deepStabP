@@ -24,6 +24,7 @@ let DeepStabP_url_v1 = Environment.deepStabP_url + "/api/v1"
 
 let httpClient = new HttpClient()
 httpClient.BaseAddress <- System.Uri(DeepStabP_url_v1)
+httpClient.Timeout <- System.TimeSpan(0,3,0)
 
 // Used to serialize Enum Unioncases as strings.
 let settings = JsonSerializerSettings()
@@ -50,11 +51,9 @@ let replaceLetters (str:string) =
     )
 
 let postDataBytesHandler (prop:Shared.PostDataBytes) = async {
-    do printfn "Hit bytes handler"
     let countChunks =
         FastaRecord.ofFile prop.data // parse data to fasta
         |> addToStorage prop.metadata // add to storage, return n of chunks
-    do printfn "Finish bytes handler"
     return countChunks
 }
 
@@ -92,21 +91,25 @@ let private processChunk (info: PredictorInfo) =
 
 let getDataHandler (guid:System.Guid) = 
     async {
+        let n() = System.DateTime.Now.ToShortTimeString()
         try
             let md, d = getStorage guid
             let chunkIndex = md.ChunkIndex
-            let n = System.DateTime.Now.ToShortTimeString()
-            printfn $"[GETDATA: {n}] {chunkIndex}/{(md.ChunkCount - 1)}; {guid}"  
+            printfn $"[GETDATA: {n()}] {chunkIndex}/{(md.ChunkCount - 1)} ({guid})"
             let chunk = d |> Seq.item chunkIndex
+            printfn $"[GETDATA: {n()}] get chunk ({guid})"
             let predictorInfo = PredictorInfo.create(md.Growth_Temp, md.MT_Mode, chunk)
+            printfn $"[GETDATA: {n()}] sent to api ({guid})"
             let! chunk_processed = processChunk predictorInfo
+            printfn $"[GETDATA: {n()}] response from api ({guid})"
             md.increaseChunkIndex() // increases chunk index by 1
             // remove if all data processed, (md.ChunkCount - 1) because index is always -1 to length
             if chunkIndex >= (md.ChunkCount - 1) then removeFromStorage guid |> ignore
+            printfn $"[GETDATA: {n()}] prosprocessing done ({guid})"
             return {chunkIndex = chunkIndex; results = chunk_processed}
         with
             | ex ->
-                printfn "[GETDATA: {n}] Failed with %s" ex.Message
+                printfn $"[GETDATA: {n()}] Failed with {ex.Message}" 
                 removeFromStorage guid |> ignore
                 return raise ex
     } 
