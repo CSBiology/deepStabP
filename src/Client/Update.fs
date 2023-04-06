@@ -55,7 +55,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                 GetDataRequestError
         nextModel, cmd
     | PostDataBytes prop ->
-        let nextModel = { model with HasJobRunning = true }
+        let nextModel = { model with HasJobRunning = true; }
         let cmd =
             Cmd.OfAsync.either
                 Api.deepStabPApi.postDataBytes
@@ -64,7 +64,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                 GetDataRequestError
         nextModel, cmd
     | PostDataResponse (chunks) ->
-        let nextModel = { model with ChunkCount = chunks; Results = List.empty; ChunkIndex = 0 }
+        let nextModel = { model with ChunkCount = chunks; Results = List.empty; ChunkIndex = 0; KeepJobRunning = true }
         let cmd =
             Cmd.OfAsync.either
                 Api.deepStabPApi.getData
@@ -75,30 +75,44 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | GetDataRequest prop ->
         let nextModel = { model with ChunkIndex = prop.ChunkIndex; Results = model.Results@prop.Results }
         // Dont call again if all chunks are processed, (nextModel.ChunkCount - 1) because index is always -1 to length
-        let modal = Client.Components.SweetAlertModals.resultModal_success(nextModel)
-        let closeMsg = fun res ->
-            Browser.Dom.console.log("CLOSED!")
-            Some <| CleanStorage model.SessionId
-        let modalCmd =
-            if Feliz.SweetAlert.Swal.isVisible() then
+        let closeMsg = fun (res) ->
+            match res with
+            | SweetAlert.Result.Dismissal _ ->
+                Some <| CleanStorage model.SessionId
+            | _ -> None
+        let modalCmd (m: Model)=
+            let modal = Client.Components.SweetAlertModals.resultModal_success(m)
+            let isVisible = Feliz.SweetAlert.Swal.isVisible()
+            // If the user closes the modal (not isVisible), it sets `KeepJobRunning` to false,
+            if not isVisible && not m.KeepJobRunning then
+                Cmd.none
+            // if the modal is visible, we expect the user to await more info
+            elif isVisible then
                 Cmd.Swal.update(modal)
+            // if `KeepJobRunning` is true but the modal is not visible the job propably just started.
             else
-                Cmd.Swal.fire(modal,closeMsg)
-        if not model.KeepJobRunning then
-            let nextModel' = disableJobRunning model
-            let nextModel'' = { nextModel' with SessionId = System.Guid.NewGuid() }
-            nextModel'', Cmd.none
-        elif nextModel.ChunkIndex >= (nextModel.ChunkCount-1) then
-            let cmd = Cmd.none
-            let nextModel' = disableJobRunning model
-            nextModel', Cmd.batch [modalCmd; cmd]
-        else
+                Cmd.Swal.fire(modal, closeMsg)
+        let handler_stopped() =
+            let mutable m = disableJobRunning nextModel
+            m <- { m with SessionId = System.Guid.NewGuid() }
+            m, modalCmd m
+        let handler_finished() =
+            let m = disableJobRunning nextModel
+            m, modalCmd (m)
+        let handler_getNext() =
             let cmd =
                 Cmd.OfAsync.perform
                     Api.deepStabPApi.getData
-                    {|session = model.SessionId|}
+                    {|session = nextModel.SessionId|}
                     (fun x -> GetDataRequest {|ChunkIndex = x.chunkIndex; Results = x.results|})
-            nextModel, Cmd.batch [modalCmd; cmd]
+            let m = nextModel
+            m, Cmd.batch [modalCmd m; cmd]
+        if not model.KeepJobRunning then
+            handler_stopped()
+        elif nextModel.ChunkIndex >= (nextModel.ChunkCount-1) then
+            handler_finished()
+        else
+            handler_getNext()
     | GetDataRequestError e ->
         let nextModel = disableJobRunning model
         nextModel, Cmd.ofMsg (GenericError e)

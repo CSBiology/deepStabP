@@ -50,9 +50,11 @@ let replaceLetters (str:string) =
     )
 
 let postDataBytesHandler (prop:Shared.PostDataBytes) = async {
+    do printfn "Hit bytes handler"
     let countChunks =
         FastaRecord.ofFile prop.data // parse data to fasta
         |> addToStorage prop.metadata // add to storage, return n of chunks
+    do printfn "Finish bytes handler"
     return countChunks
 }
 
@@ -81,7 +83,6 @@ let private processChunk (info: PredictorInfo) =
     task {
         let url = DeepStabP_url_v1 + "/predict"
         let requestJson = JsonConvert.SerializeObject(info, settings)
-        printfn "[REQUEST JSON] %s" requestJson
         let content = new StringContent(requestJson,System.Text.Encoding.UTF8, "application/json")
         let! request = httpClient.PostAsync(url, content)
         let! content = request.Content.ReadAsStringAsync()
@@ -92,20 +93,20 @@ let private processChunk (info: PredictorInfo) =
 let getDataHandler (guid:System.Guid) = 
     async {
         try
-            printfn "[getData] start"
             let md, d = getStorage guid
             let chunkIndex = md.ChunkIndex
-            printfn "[getData] %A/%A" chunkIndex (md.ChunkCount - 1)
+            let n = System.DateTime.Now.ToShortTimeString()
+            printfn $"[GETDATA: {n}] {chunkIndex}/{(md.ChunkCount - 1)}; {guid}"  
             let chunk = d |> Seq.item chunkIndex
             let predictorInfo = PredictorInfo.create(md.Growth_Temp, md.MT_Mode, chunk)
             let! chunk_processed = processChunk predictorInfo
             md.increaseChunkIndex() // increases chunk index by 1
             // remove if all data processed, (md.ChunkCount - 1) because index is always -1 to length
             if chunkIndex >= (md.ChunkCount - 1) then removeFromStorage guid |> ignore
-            printfn "[getData] end"
             return {chunkIndex = chunkIndex; results = chunk_processed}
         with
             | ex ->
+                printfn "[GETDATA: {n}] Failed with %s" ex.Message
                 removeFromStorage guid |> ignore
                 return raise ex
     } 

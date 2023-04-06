@@ -68,8 +68,8 @@ let private title (model:State.Model) =
     let max = model.ChunkCount
     Html.span [
         Html.span $"Success ({current}/{max})"
-        if current <> max then
-            Html.span " calculating next "
+        if model.KeepJobRunning then
+            Html.span " .. calculating next "
             Bulma.icon [Html.i [prop.className "fa-solid fa-person-running fa-bounce"]]
     ]
 

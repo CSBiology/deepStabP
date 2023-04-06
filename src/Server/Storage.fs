@@ -29,7 +29,6 @@ let removeFromStorage guid =
     let md_rem = Storage.metaData.Remove(guid)
     d_rem && md_rem
 
-
 type ProcessMetadata with
     // Increases ChunkIndex by 1
     member this.increaseChunkIndex() =
