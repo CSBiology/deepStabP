@@ -63,27 +63,33 @@ let postDataStringHandler (prop:Shared.PostDataString) = async {
     return countChunks
 }
 
+let private parseToResultType (jsonStr: string) = 
+    let response = JsonConvert.DeserializeObject<{| Prediction: {| Protein: Map<int,string>; Tm: Map<int,float> |} |}>(jsonStr)
+    let protein = response.Prediction.Protein
+    let tm = response.Prediction.Tm
+    let min,_ = tm |> Map.minKeyValue
+    let max, _ = tm |> Map.maxKeyValue
+    [
+        for i in min .. max do
+            yield PredictorResponse.create(
+                protein.[i],
+                tm.[i]
+            )
+    ]
+
+let private processChunk (info: PredictorInfo) =
+    task {
+        let url = DeepStabP_url_v1 + "/predict"
+        let requestJson = JsonConvert.SerializeObject(info, settings)
+        printfn "[REQUEST JSON] %s" requestJson
+        let content = new StringContent(requestJson,System.Text.Encoding.UTF8, "application/json")
+        let! request = httpClient.PostAsync(url, content)
+        let! content = request.Content.ReadAsStringAsync()
+        let responseParsed = parseToResultType content
+        return responseParsed
+    } |> Async.AwaitTask
+
 let getDataHandler (guid:System.Guid) = 
-    let processChunk (info: PredictorInfo) =
-        task {
-            let url = DeepStabP_url_v1 + "/predict"
-            let requestJson = JsonConvert.SerializeObject(info, settings)
-            printfn "[REQUEST JSON] %s" requestJson
-            let content = new StringContent(requestJson,System.Text.Encoding.UTF8, "application/json")
-            let! request = httpClient.PostAsync(url, content)
-            let! content = request.Content.ReadAsStringAsync()
-            let response = JsonConvert.DeserializeObject<{| Prediction: seq<seq<obj>> |}>(content)
-            let responseParsed =
-                response.Prediction
-                |> Seq.map (fun x ->
-                    PredictorResponse.create(
-                        Seq.item 0 x |> string,
-                        Seq.item 1 x |> string |> float
-                    )
-                )
-                |> Array.ofSeq
-            return responseParsed
-        } |> Async.AwaitTask
     async {
         try
             printfn "[getData] start"
@@ -97,7 +103,7 @@ let getDataHandler (guid:System.Guid) =
             // remove if all data processed, (md.ChunkCount - 1) because index is always -1 to length
             if chunkIndex >= (md.ChunkCount - 1) then removeFromStorage guid |> ignore
             printfn "[getData] end"
-            return {chunkIndex = chunkIndex; results = List.ofArray chunk_processed}
+            return {chunkIndex = chunkIndex; results = chunk_processed}
         with
             | ex ->
                 removeFromStorage guid |> ignore

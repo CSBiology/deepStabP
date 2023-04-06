@@ -63,13 +63,21 @@ module private ResultModal_success =
 
 open ResultModal_success
 
+let private title (model:State.Model) =
+    let current = model.ChunkIndex+1
+    let max = model.ChunkCount
+    Html.span [
+        Html.span $"Success ({current}/{max})"
+        if current <> max then
+            Html.span " calculating next "
+            Bulma.icon [Html.i [prop.className "fa-solid fa-person-running fa-bounce"]]
+    ]
 
 /// if more customization is needed one can fallback to ModalLogic
-let resultModal_success (model:State.Model)=
-    let title = $"Success ({model.ChunkIndex+1}/{model.ChunkCount})"
+let resultModal_success (model:State.Model) =
     [
         swal.icon.success
-        swal.title title
+        swal.title (title model)
         swal.html (body model)
         swal.showCloseButton true
         swal.showCancelButton true

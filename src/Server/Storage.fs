@@ -17,7 +17,7 @@ let getStorage guid =
 
 /// Returns number of chunks into which data was grouped.
 let addToStorage (md: ProcessMetadata) (data: FastaRecord list) =
-    let data' = data |> Seq.chunkBySize 10
+    let data' = data |> Seq.chunkBySize 5
     let chunkCount = data' |> Seq.length
     let md' = {md with ChunkCount = chunkCount}
     Storage.data.Add(md.Session, data')
