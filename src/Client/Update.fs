@@ -16,6 +16,8 @@ let init () : Model * Cmd<Msg> =
 
 open Feliz.SweetAlert
 
+let private disableJobRunning (model: Model) = {model with HasJobRunning = false; KeepJobRunning = false}
+
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
     | UpdatePage nextPage ->
@@ -23,8 +25,6 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             model with Page = nextPage
         }
         nextModel, Cmd.none
-    | UpdateHasJobRunning b ->
-        { model with HasJobRunning = b }, Cmd.none
     | GetVersionUIRequest ->
         let cmd =
             Cmd.OfAsync.perform
@@ -76,14 +76,21 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         let nextModel = { model with ChunkIndex = prop.ChunkIndex; Results = model.Results@prop.Results }
         // Dont call again if all chunks are processed, (nextModel.ChunkCount - 1) because index is always -1 to length
         let modal = Client.Components.SweetAlertModals.resultModal_success(nextModel)
+        let closeMsg = fun res ->
+            Browser.Dom.console.log("CLOSED!")
+            Some <| CleanStorage model.SessionId
         let modalCmd =
             if Feliz.SweetAlert.Swal.isVisible() then
                 Cmd.Swal.update(modal)
             else
-                Cmd.Swal.fire(modal)
-        if nextModel.ChunkIndex >= (nextModel.ChunkCount-1) then
+                Cmd.Swal.fire(modal,closeMsg)
+        if not model.KeepJobRunning then
+            let nextModel' = disableJobRunning model
+            let nextModel'' = { nextModel' with SessionId = System.Guid.NewGuid() }
+            nextModel'', Cmd.none
+        elif nextModel.ChunkIndex >= (nextModel.ChunkCount-1) then
             let cmd = Cmd.none
-            let nextModel' = { nextModel with HasJobRunning = false }
+            let nextModel' = disableJobRunning model
             nextModel', Cmd.batch [modalCmd; cmd]
         else
             let cmd =
@@ -93,7 +100,17 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                     (fun x -> GetDataRequest {|ChunkIndex = x.chunkIndex; Results = x.results|})
             nextModel, Cmd.batch [modalCmd; cmd]
     | GetDataRequestError e ->
-        let nextModel = { model with HasJobRunning = false }
+        let nextModel = disableJobRunning model
         nextModel, Cmd.ofMsg (GenericError e)
     | GenericError exn ->
         model, Cmd.Swal.Simple.error(exn.GetPropagatedError())
+    | DisableJobRunning ->
+        let nextModel = disableJobRunning model
+        nextModel, Cmd.none
+    | CleanStorage guid ->
+        let nextModel = disableJobRunning model
+        let cmd =
+            Cmd.OfAsync.attempt
+                Api.deepStabPApi.cleanStorage {|session = guid|}
+                (fun exn -> failwithf "Unable to clear session id: %s" exn.Message)
+        nextModel, cmd

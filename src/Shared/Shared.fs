@@ -48,4 +48,5 @@ type IDeepStabPApi = {
     postDataBytes: PostDataBytes -> Async<int>
     postDataString: PostDataString -> Async<int>
     getData: {|session: Guid|} -> Async<GetData_Response>
+    cleanStorage: {|session: Guid|} -> Async<unit>
 }

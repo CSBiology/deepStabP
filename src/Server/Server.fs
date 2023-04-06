@@ -25,7 +25,8 @@ let deepStabPApi : IDeepStabPApi = {
     postDataBytes = fun prop -> DeepStabP.Api.postDataBytesHandler prop
     postDataString = fun prop -> DeepStabP.Api.postDataStringHandler prop
     getData = fun prop -> DeepStabP.Api.getDataHandler prop.session
-}
+    cleanStorage = fun prop -> DeepStabP.Api.cleanStorageHandler prop.session
+} 
 
 let webApp_deepStabp =
     Remoting.createApi ()

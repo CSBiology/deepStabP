@@ -118,3 +118,9 @@ let getVersionHandler () =
         return r.Version
     }
     |> Async.AwaitTask
+
+let cleanStorageHandler (guid: System.Guid) =
+    async {
+        let _ = Storage.removeFromStorage guid
+        return ()
+    }

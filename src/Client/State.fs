@@ -80,34 +80,38 @@ type Page =
 | Contact
 
 type Model = {
-    SessionId       : System.Guid
+    SessionId           : System.Guid
     /// The current chunk
-    ChunkIndex      : int
+    ChunkIndex          : int
     /// The count of all chunks
-    ChunkCount      : int
-    Results         : DeepStabP.Types.PredictorResponse list
-    Version         : Versions
-    HasJobRunning   : bool
-    Page            : Page
+    ChunkCount          : int
+    Results             : DeepStabP.Types.PredictorResponse list
+    Version             : Versions
+    /// This indicates if the active process should proceed running, if set to false, any GetDataRequest loop will be stopped.
+    KeepJobRunning      : bool
+    HasJobRunning       : bool
+    Page                : Page
 } with
     static member init() = {
-        SessionId       = System.Guid.NewGuid()
-        Results         = List.empty
-        ChunkIndex      = 0
-        ChunkCount      = 0
-        HasJobRunning   = false
-        Page            = Page.Main
-        Version         = Versions.init
+        SessionId           = System.Guid.NewGuid()
+        Results             = List.empty
+        ChunkIndex          = 0
+        ChunkCount          = 0
+        KeepJobRunning      = false
+        HasJobRunning       = false
+        Page                = Page.Main
+        Version             = Versions.init
     }
 
 type Msg =
     | GenericError              of exn
     | UpdatePage                of Page
-    | UpdateHasJobRunning       of bool
     | GetVersionUIRequest
     | GetVersionUIResponse      of string
     | GetVersionApiRequest
     | GetVersionApiResponse     of string
+    | DisableJobRunning
+    | CleanStorage              of System.Guid
     | PostDataString            of Shared.PostDataString
     | PostDataBytes             of Shared.PostDataBytes
     | PostDataResponse          of ChunkCount:int
