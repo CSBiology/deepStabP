@@ -69,21 +69,20 @@ let getDataHandler (guid:System.Guid) =
             let url = DeepStabP_url_v1 + "/predict"
             let requestJson = JsonConvert.SerializeObject(info, settings)
             printfn "[REQUEST JSON] %s" requestJson
-            //let content = new StringContent(requestJson,System.Text.Encoding.UTF8, "application/json")
-            //let! request = httpClient.PostAsync(url, content)
-            //let! content = request.Content.ReadAsStringAsync()
-            //let response = JsonConvert.DeserializeObject<{| Prediction: seq<seq<obj>> |}>(content)
-            //let responseParsed =
-            //    response.Prediction
-            //    |> Seq.map (fun x ->
-            //        PredictorResponse.create(
-            //            Seq.item 0 x |> string,
-            //            Seq.item 1 x |> string |> float
-            //        )
-            //    )
-            //    |> Array.ofSeq
-            //return responseParsed
-            return [|for i in 0 .. 5 do yield PredictorResponse.create(sprintf "Test%i" i, float i)|]
+            let content = new StringContent(requestJson,System.Text.Encoding.UTF8, "application/json")
+            let! request = httpClient.PostAsync(url, content)
+            let! content = request.Content.ReadAsStringAsync()
+            let response = JsonConvert.DeserializeObject<{| Prediction: seq<seq<obj>> |}>(content)
+            let responseParsed =
+                response.Prediction
+                |> Seq.map (fun x ->
+                    PredictorResponse.create(
+                        Seq.item 0 x |> string,
+                        Seq.item 1 x |> string |> float
+                    )
+                )
+                |> Array.ofSeq
+            return responseParsed
         } |> Async.AwaitTask
     async {
         try
