@@ -4,19 +4,27 @@
 
 You'll need to install the following pre-requisites in order to build SAFE applications
 
-* [.NET Core SDK](https://www.microsoft.com/net/download) 6.0 or higher
-* [Node 16](https://nodejs.org/en/download/)
-* [Python 3.9](https://www.python.org/downloads/release/python-3916/) (used for ml api)
+You can check if you have these installed with the cmd command written below each 👀
+
+- The [.NET 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+  - test with `dotnet --list-sdks`
+- [node.js (v16.x || v18.x)](https://nodejs.org/en)
+  - Will most of the time also install npm
+  - test with `node --version`
+- [npm (>v8.x)](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+  - test with `npm --version`
+- [Python 3.9](https://www.python.org/downloads/release/python-3916/) (used for ml api)
+  - test with `py --version`
 
 ## Starting the application
 
-Before you run the project **for the first time only** you must install dotnet "local tools" with this command:
+1. Before you run the project **for the first time only** you must install dotnet "local tools" with this command:
 
 ```bash
 dotnet tool restore
 ```
 
-To concurrently run the server, client and the python fastapi components in watch mode use the following command:
+2. To concurrently run the server, client and the python fastapi components in watch mode use the following command:
 
 ```bash
 ./build.cmd
