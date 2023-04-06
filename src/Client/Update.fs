@@ -23,6 +23,8 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             model with Page = nextPage
         }
         nextModel, Cmd.none
+    | UpdateHasJobRunning b ->
+        { model with HasJobRunning = b }, Cmd.none
     | GetVersionUIRequest ->
         let cmd =
             Cmd.OfAsync.perform
@@ -43,6 +45,24 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | GetVersionApiResponse api_version ->
         let nextModel = {model with Version = {model.Version with Api = api_version}}
         nextModel, Cmd.none
+    | PostDataString prop ->
+        let nextModel = { model with HasJobRunning = true }
+        let cmd =
+            Cmd.OfAsync.either
+                Api.deepStabPApi.postDataString
+                prop
+                PostDataResponse
+                GetDataRequestError
+        nextModel, cmd
+    | PostDataBytes prop ->
+        let nextModel = { model with HasJobRunning = true }
+        let cmd =
+            Cmd.OfAsync.either
+                Api.deepStabPApi.postDataBytes
+                prop
+                PostDataResponse
+                GetDataRequestError
+        nextModel, cmd
     | PostDataResponse (chunks) ->
         let nextModel = { model with ChunkCount = chunks; Results = List.empty; ChunkIndex = 0 }
         let cmd =
@@ -53,7 +73,6 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                 GetDataRequestError
         nextModel, cmd
     | GetDataRequest prop ->
-        printfn "hit request"
         let nextModel = { model with ChunkIndex = prop.ChunkIndex; Results = model.Results@prop.Results }
         // Dont call again if all chunks are processed, (nextModel.ChunkCount - 1) because index is always -1 to length
         let modal = Client.Components.SweetAlertModals.resultModal_success(nextModel)
@@ -75,4 +94,6 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             nextModel, Cmd.batch [modalCmd; cmd]
     | GetDataRequestError e ->
         let nextModel = { model with HasJobRunning = false }
-        nextModel, Cmd.Swal.Simple.error(e.GetPropagatedError())
+        nextModel, Cmd.ofMsg (GenericError e)
+    | GenericError exn ->
+        model, Cmd.Swal.Simple.error(exn.GetPropagatedError())

@@ -52,12 +52,12 @@ module Input =
     type InputMsg =
     | Reset
     | RemoveFasta
-    | UpdateSeqMode                 of SeqMode option
-    | UpdateMT_Mode                 of MT_Mode
-    | UpdateGrowthTemp              of float
-    | SequenceInput_Handler         of string
-    | FastaUpload_Handler           of data:byte [] * name:string * fileSize: int
-    | FastaValidation               of Result<string,char list>
+    | UpdateSeqMode             of SeqMode option
+    | UpdateMT_Mode             of MT_Mode
+    | UpdateGrowthTemp          of float
+    | SequenceInput_Handler     of string
+    | FastaUpload_Handler       of data:byte [] * name:string * fileSize: int
+    | FastaValidation           of Result<string,char list>
 
 type OrganismModel =
 | Plant
@@ -101,14 +101,18 @@ type Model = {
     }
 
 type Msg =
-    | UpdatePage                        of Page
+    | GenericError              of exn
+    | UpdatePage                of Page
+    | UpdateHasJobRunning       of bool
     | GetVersionUIRequest
-    | GetVersionUIResponse              of string
+    | GetVersionUIResponse      of string
     | GetVersionApiRequest
-    | GetVersionApiResponse             of string
-    | PostDataResponse                  of ChunkCount:int
+    | GetVersionApiResponse     of string
+    | PostDataString            of Shared.PostDataString
+    | PostDataBytes             of Shared.PostDataBytes
+    | PostDataResponse          of ChunkCount:int
     /// Uses the current chunk index to determine if it should be looped
-    | GetDataRequest                    of {|ChunkIndex: int; Results: DeepStabP.Types.PredictorResponse list|}
-    | GetDataRequestError               of exn
+    | GetDataRequest            of {|ChunkIndex: int; Results: DeepStabP.Types.PredictorResponse list|}
+    | GetDataRequestError       of exn
     //| PredictionRequest                 of DeepStabP.Types.PredictorInfo
     //| PredictionResponse                of Result<DeepStabP.Types.PredictorResponse [],exn>

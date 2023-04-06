@@ -82,6 +82,7 @@ module private Update =
             let updatedModel = {state with HasValidFasta = false; InvalidFastaChars = invalidChars}
             updatedModel, Cmd.none
 
+
 open State
 
 let private validateInputState (versions: State.Versions) (state:InputState) =
@@ -273,18 +274,6 @@ let private mtMode_checkbox (state:InputState) (setState: InputMsg -> unit) (mt_
 
 open Shared
 
-module PostFunctions =
-
-    let postDataString (d: string) (md: ProcessMetadata) dispatch = async {
-        let! output = Api.deepStabPApi.postDataString {metadata = md; data = d}
-        return output |> PostDataResponse |> dispatch
-    }
-
-    let postDataBytes (fileBytes: byte []) (md: ProcessMetadata) dispatch = async {
-        let! output = Api.deepStabPApi.postDataBytes {metadata = md; data = fileBytes}
-        return output |> PostDataResponse |> dispatch
-    }
-
 let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (buttonMsg:string) (state: InputState) (setState: InputMsg -> unit) (model:Model) (dispatch: Msg -> unit) =
     Column.column [Column.Width (Screen.Desktop, Column.Is5);Column.CustomClass "rightSelector"] [
         Heading.h3 [] [str "Start Prediction"]
@@ -317,8 +306,8 @@ let private startPredictionRight (hasJobRunning:bool) (isValidState:bool) (butto
                     if isValidState then
                         let md = ProcessMetadata.init(model.SessionId,state.MT_Mode,state.GrowthTemperature)
                         match state.SeqMode with
-                        | Some SeqMode.Sequence -> PostFunctions.postDataString state.Sequence md dispatch |> Async.StartImmediate
-                        | Some SeqMode.File     -> PostFunctions.postDataBytes state.FastaFileData md dispatch |> Async.StartImmediate
+                        | Some SeqMode.Sequence -> PostDataString {metadata = md; data = state.Sequence} |> dispatch
+                        | Some SeqMode.File     -> PostDataBytes {metadata = md; data = state.FastaFileData} |> dispatch
                         | None -> ()
                 )
             ] [str buttonMsg]
