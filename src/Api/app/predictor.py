@@ -10,49 +10,34 @@ from io import StringIO
 import sys
 import re
 
-string_no_valid_format = '''No valid file format found. Supportet are:
-        Fasta format (including a header starting with ">" followed by a new line with the sequence):
-        Example:
-        >sp|A0A178WF56|CSTM3_ARATH Protein CYSTEINE-RICH TRANSMEMBRANE MODULE 3 OS=Arabidopsis thaliana OX=3702 GN=CYSTM3 PE=1 SV=1
-        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-
-        or pure amino acid sequences (only ONE sequence is supported):
-        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLQRTGKSCRLRWVNKL
-        RPNLKNGCKFSADEERTVIELQSEFGNKWARIATYLPGRTDNDVKNFWSSRQKRLARILH
-        
-        You can also only use amino acid sequences with a maximum length of 10000 amino acids. 
-        Addtionaly make sure that you do not include any non alphabetic letters in the amino acid sequence as this will also terminate your request.
-        If you want to pass in multiple pure amino acid seqeunces that are not in the fasta format, you must use the following format:
-        > some descriptive name
-        MRKMEAKKEEIKKGPWKAEEDEVLINHVKRYGPRDWSSIRSKGLLSSRQKRLARILHRIL
-        RPNLKNGCKFSADEERTVIELQSEFGN
-        > next descriptive name
-        FSADEERTVIELQSEFGNKWARIATYLPGR
-        and so on
-        '''
-
 #function to convert the fasta sequence into the embeddingns with a lenght of 1024 (the returned embedding is the mean of all amino acid embeddings of the sequence)
-def new_features (features, model, tokenizer):
+def new_features (fasta_record, model, tokenizer):
     device = torch.device('cpu')
-    model = model.eval()
-    ids = tokenizer.batch_encode_plus(features, add_special_tokens=True, padding=True)
-    input_ids = torch.tensor(ids['input_ids']).to(device)
-    attention_mask = torch.tensor(ids['attention_mask']).to(device)
-    with torch.no_grad():
-        embedding = model(input_ids=input_ids,attention_mask=attention_mask)
-    embedding = embedding.last_hidden_state.cpu().numpy()
-    new_feature = []
-    for seq_num in range(len(embedding)):
-        seq_len = (attention_mask[seq_num]==1).sum()
-        seq_emd = embedding[seq_num][:seq_len-1]
-        new_feature.append(seq_emd)
-    new_feature = np.array (new_feature)
-    out = torch.tensor (new_feature)
-    out = out.mean(1)
-    out = out.reshape(-1)
-    return out
-class LSMTNeuralNet (pl.LightningModule):
+    model = model.to(device)
+    for x,fasta in enumerate(fasta_record):
+        ids = tokenizer.batch_encode_plus(str(fasta.sequence), add_special_tokens=True, padding=True)
+        input_ids = torch.tensor(ids['input_ids']).to(device)
+        attention_mask = torch.tensor(ids['attention_mask']).to(device)
+        with torch.no_grad():
+            embedding = model(input_ids=input_ids,attention_mask=attention_mask)
+        embedding = embedding.last_hidden_state.cpu().numpy()
+        new_feature = []
+        for seq_num in range(len(embedding)):
+            seq_len = (attention_mask[seq_num]==1).sum()
+            seq_emd = embedding[seq_num][:seq_len-1]
+            new_feature.append(seq_emd)
+        new_feature = np.array (new_feature)
+        out = torch.from_numpy (new_feature)
+        out = out.reshape(1, -1, 1024)
+        out = out.mean(1)
+        out = out.reshape(1,-1)
+        if x ==0:
+            new_out = out.clone()
+        else:
+            new_out = torch.cat ((new_out, out),axis=0)
+    return new_out
+
+class deepSTAPpMLP (pl.LightningModule):
     #initialisation of parameters and layers
     def __init__(self, dropout, learning_rate, batch_size):
         super().__init__()
@@ -83,19 +68,16 @@ class LSMTNeuralNet (pl.LightningModule):
         self.cell = nn.Linear (1, 20)
         self.cell2 = nn.Linear (20, 10)
         self.cell_dropout = nn.Dropout1d(dropout)
-    #forward pass through the neural network    
+    #forward pass through the neural network 
     def forward (self, x, species_feature,lysate, cell):
-        x = x.reshape (1,-1 ).float()
-        species_feature = torch.tensor (species_feature, dtype=torch.float32)
-        lysate = torch.tensor (lysate, dtype=torch.float32)
-        cell = torch.tensor (cell, dtype=torch.float32)
-        lysate = lysate.reshape (-1, 1)
+        x = x.float()
+        species_feature = species_feature.float().reshape (-1, 1)
+        lysate = lysate.float().reshape (-1, 1)
+        cell = cell.float().reshape (-1, 1)
         lysate = self.lysate_dropout(F.selu(self.lysate (lysate)))
         lysate = self.lysate_dropout(F.selu(self.lysate2 (lysate)))
-        cell = cell.reshape (-1, 1)
         cell = self.cell_dropout(F.selu(self.cell (cell)))
         cell = self.cell_dropout(F.selu(self.cell2 (cell)))
-        species_feature = species_feature.reshape (-1, 1)
         species_feature = self.species_dropout(F.selu(self.species_layer_one (species_feature)))
         species_feature = self.species_dropout(F.selu(self.species_layer_two (species_feature)))
         x = torch.cat ([lysate, cell,x,species_feature], dim=1)
@@ -105,99 +87,25 @@ class LSMTNeuralNet (pl.LightningModule):
         x = self.third_dropout(self.batch_norm3(F.selu(self.third_layer (x))))
         tm = self.seventh_layer (x)
         return tm
-#function to convert the fasta file, the lysate/cell property and the growth temperature into a single dataframe
-def create_dataframe (fasta, lycell, growth):
-    growth_temp = (growth-30.44167)/(97.4167-30.44167)
-    if lycell == 'Lysate':
-        lysate = 1
-        cell = 0
-    else:
-        lysate = 0
-        cell = 1
-    if (">" in fasta):
-        with StringIO(fasta) as fastq_io:
-            genome = SeqIO.parse (fastq_io, 'fasta')
-            for x,fasta in enumerate (genome):
-                name, sequence = fasta.id, str(fasta.seq)
-                if (sequence):
-                    try:
-                        name = name.split('|')[1]
-                    except:
-                        name = name
-                    if sequence.isalpha():
-                        if len(sequence)>10000:
-                            print (string_no_valid_format)
-                            sys.exit
-                        sequence = sequence.upper().replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
-                        sequence = list (sequence)
-                        sequence = ' '.join (sequence)
-                        sequence = [sequence]
-                        if x == 0:
-                            df_dict = {'Protein':name, 'feature':[sequence]}
-                            dataframe = pd.DataFrame (df_dict)
-                        else:
-                            df_dict = {'Protein':name, 'feature':[sequence]}
-                            new_df2 = pd.DataFrame (df_dict)
-                            dataframe = pd.concat ((dataframe, new_df2))
-                    else:
-                        print (string_no_valid_format)
-                        sys.exit
-                else:
-                    sequence = name
-                    name = "No Name"
-                    if sequence.isalpha():
-                        if len(sequence)>10000:
-                            print (string_no_valid_format)
-                            sys.exit
-                        sequence = sequence.upper().replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
-                        sequence = list (sequence)
-                        sequence = ' '.join (sequence)
-                        sequence = [sequence]
-                        if x == 0:
-                            df_dict = {'Protein':name, 'feature':[sequence]}
-                            dataframe = pd.DataFrame (df_dict)
-                        else:
-                            df_dict = {'Protein':name, 'feature':[sequence]}
-                            new_df2 = pd.DataFrame (df_dict)
-                            dataframe = pd.concat ((dataframe, new_df2))
-                    else:
-                        print (string_no_valid_format)
-                        sys.exit
-    else:
-        fasta = re.sub(r"[\n\t\s]*", "", fasta)
-        if fasta.isalpha():
-            fasta = fasta.upper()
-            if len(fasta)>10000:
-                print (string_no_valid_format)
-                sys.exit
-            sequence = fasta.replace ("O",'X').replace ("U",'X').replace( "J",'X').replace ("Z",'X').replace ("B",'X')
-            sequence = list (sequence)
-            sequence = ' '.join (sequence)
-            sequence = [sequence]
-            df_dict = {'Protein':"No name", 'feature':[sequence]}
-            dataframe = pd.DataFrame (df_dict)
-        else:
-            print (string_no_valid_format)
-            sys.exit
-    dataframe['growth_feature'] = growth_temp  
-    dataframe['lysate'] = lysate
-    dataframe['cell'] = cell
-    return dataframe
 
-#function to predict the melting temperature of the dataframe
-def determine_tm (dataframe, transformer, tm_predicter, new_features, tokenizer):
-    output = []
-    protein = []
-    for _, row in dataframe.iterrows():
-        embedding = new_features(row['feature'], transformer, tokenizer)
-        tm_predicter = tm_predicter.eval()
-        tm_prediction = tm_predicter (embedding, row['growth_feature'],row['lysate'], row['cell'])
-        output.append (tm_prediction.cpu().detach().numpy().tolist()[0][0])
-        protein.append (row['Protein'])
-    output_df = pd.DataFrame ({'Protein':protein, 'Tm':output})
+def determine_tm (fasta, lysate, species, transformer, tm_predicter, new_features, tokenizer):
+    length = len(fasta)
+    embedding = new_features(fasta, transformer, tokenizer)
+    species = (species-30.44167)/(97.4167-30.44167)
+    species_list = torch.from_numpy(np.array([species]*length))
+    if lysate == 'Lysate':
+        lysate = torch.from_numpy(np.array([1]*length))
+        cell = torch.from_numpy(np.array([0]*length))
+    else:
+        lysate = torch.from_numpy(np.array([0]*length))
+        cell = torch.from_numpy(np.array([1]*length))
+    tm_prediction = tm_predicter (embedding, species_list, lysate, cell)
+    tm_prediction = tm_prediction.flatten()
+    tm_prediction = tm_prediction.tolist()
+    output_df = pd.DataFrame (list(zip((fasta_record.header for fasta_record in fasta),tm_prediction)))
+    columns = ['Protein','Tm']
+    output_df.columns = columns
     output_df['Tm'] = output_df['Tm']*(97.4166905791789-30.441673997070385)+30.441673997070385
-    output_df = output_df.to_records(index=False)
-    output_df = output_df.tolist()
     return output_df
 
 

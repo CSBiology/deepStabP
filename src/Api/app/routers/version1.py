@@ -24,10 +24,9 @@ router = APIRouter(
 tokenizer = T5Tokenizer.from_pretrained("Rostlab/prot_t5_xl_uniref50", do_lower_case=False )
 model = T5EncoderModel.from_pretrained("Rostlab/prot_t5_xl_uniref50")
 gc.collect()
-prediction_net = LSMTNeuralNet.load_from_checkpoint ("trained_model/b25_sampled_10k_tuned_2_d01/checkpoints/epoch=1-step=2316.ckpt")
+prediction_net = deepSTAPpMLP.load_from_checkpoint ("trained_model/b25_sampled_10k_tuned_2_d01/checkpoints/epoch=1-step=2316.ckpt")
 
 @router.post("/predict", tags=["latest"])
 def predict(info: PredictorInfo):
-    new_df = create_dataframe (info.fasta, info.mt_mode, info.growth_temp)
-    prediction = determine_tm (new_df, model, prediction_net, new_features, tokenizer)
+    prediction = determine_tm (info.fasta,info.mt_mode, info.growth_temp, model, prediction_net, new_features, tokenizer)
     return {"Prediction": prediction}
