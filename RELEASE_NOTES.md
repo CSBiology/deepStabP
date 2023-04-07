@@ -1,5 +1,23 @@
-### 1.0.0+124b55b (Released 2023-3-28)
+### 1.1.0+5dac89c (Released 2023-4-7)
+
+### 1.0.0+5dac89c (Released 2023-4-7)
 * Additions:
+    * [[#5dac89c](https://github.com/CSBiology/deepStabP/commit/5dac89cfc65ac171c31b35a83665d9525689b76f)] Merge branch 'main' of https://github.com/CSBiology/deepStabP
+    * [[#128c685](https://github.com/CSBiology/deepStabP/commit/128c685fe1f196ce1989adac00e71c8c8f63fdbe)] Up server version
+    * [[#3f190f1](https://github.com/CSBiology/deepStabP/commit/3f190f19f23b6b6803b89eda48f324ac7ceabfff)] Added header parser
+    * [[#80439b7](https://github.com/CSBiology/deepStabP/commit/80439b7ec0c796c46f7f4680fa8f78148983016a)] Increase ui feedback :art: and add more backend logging
+    * [[#38d282a](https://github.com/CSBiology/deepStabP/commit/38d282a3b703cba941e64f4e357db342d3704862)] Make process stoppable :sparkles:
+    * [[#c4f4049](https://github.com/CSBiology/deepStabP/commit/c4f40498fe175cb10ad78a8682670cd760fc5098)] Update result json parsing
+    * [[#cdf51a6](https://github.com/CSBiology/deepStabP/commit/cdf51a6f86f8c80a064fc87750b0b6fee42528ed)] backend update
+    * [[#47307e7](https://github.com/CSBiology/deepStabP/commit/47307e743a30ce97172454fbd739459008f23e1c)] Clean up post data process and add loading
+    * [[#f754af2](https://github.com/CSBiology/deepStabP/commit/f754af218960224d7fc96643398532001ef6cc35)] Update README.md format examples
+    * [[#f98a3ca](https://github.com/CSBiology/deepStabP/commit/f98a3ca876e5d0ec0b7d7423e5f75dd35afc52fb)] Update install setup :books:
+    * [[#6263a6b](https://github.com/CSBiology/deepStabP/commit/6263a6bcc59a95a4c9ab476bfbe809bb1aa67109)] Change result table header #6
+    * [[#6693734](https://github.com/CSBiology/deepStabP/commit/6693734943164defd02ec7fb464bb742663f2dd0)] Major changes to support bigger file sizes #7:sparkles:
+    * [[#80294c0](https://github.com/CSBiology/deepStabP/commit/80294c0761ac1e4fbfb72226905a6ca7db7745a8)] Adjust tag again
+    * [[#e22077c](https://github.com/CSBiology/deepStabP/commit/e22077c0f94117554d799afde1b9ddb873dcf4c3)] reorder html
+    * [[#35aa03b](https://github.com/CSBiology/deepStabP/commit/35aa03b3e28739e2b1ab0e4a1db43b6b00616e78)] Add google indexing html tag
+    * [[#446f62b](https://github.com/CSBiology/deepStabP/commit/446f62b2000267572ff2fd608b436ff2eb40f53c)] Update to release version
     * [[#1a2c799](https://github.com/CSBiology/deepStabP/commit/1a2c79906b741a72e4a571c5fc15a754ac348606)] Update predictor.py
     * [[#7188523](https://github.com/CSBiology/deepStabP/commit/7188523035496cdb29638dcf3b0dd3ce53f182d8)] Update main.py
     * [[#9b695e1](https://github.com/CSBiology/deepStabP/commit/9b695e17a7972c886a6f3e4b2dbe7b9f382c8510)] Updated predictor.py
@@ -9,6 +27,10 @@
     * [[#634c8f7](https://github.com/CSBiology/deepStabP/commit/634c8f7d7b2d5bf72a3ca40a75060ade305b5f86)] Add rich search information
     * [[#69d2c16](https://github.com/CSBiology/deepStabP/commit/69d2c165133df293c0dbf6d20489e9422ca14398)] Add contact information #3
     * [[#124b55b](https://github.com/CSBiology/deepStabP/commit/124b55bfcd883d4d7bbf9f507437c599e6f44656)] Add examples dropdown :sparkles:#4
+* Deletions:
+    * [[#7a8a9f0](https://github.com/CSBiology/deepStabP/commit/7a8a9f00327870833e44ffa308ef882345f91a40)] Remove test code
+* Bugfixes:
+    * [[#ed214b2](https://github.com/CSBiology/deepStabP/commit/ed214b253f0c20fb93a7da6418cb5db88947f178)] Fix immediate issues :bug:
 
 ### 0.1.0+e111d1c (Released 2023-3-17)
 * Additions:
