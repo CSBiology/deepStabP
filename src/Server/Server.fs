@@ -15,7 +15,7 @@ let private errorHandler (ex:exn) (routeInfo:RouteInfo<HttpContext>) =
 
 let serviceApi = {
     getVersion = fun () -> async {
-        return "1.0.0"
+        return "1.1.0"
     }
 }
 
