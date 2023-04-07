@@ -105,6 +105,9 @@ def determine_tm (fasta, lysate, species, transformer, tm_predicter, new_feature
     output_df = pd.DataFrame (list(zip((fasta_record.header for fasta_record in fasta),tm_prediction)))
     columns = ['Protein','Tm']
     output_df.columns = columns
+    output_df['Protein'] = output_df['Protein'].str.replace(r"[A-Za-z][A-Za-z]\|",'')
+    output_df['Protein'] = output_df['Protein'].str.replace(r"\|.*",'')
+    output_df['Protein'] = output_df['Protein'].fillna('No valid name', inplace=False) 
     output_df['Tm'] = output_df['Tm']*(97.4166905791789-30.441673997070385)+30.441673997070385
     return output_df
 
