@@ -90,6 +90,8 @@ class deepSTAPpMLP (pl.LightningModule):
 
 def determine_tm (fasta, lysate, species, transformer, tm_predicter, new_features, tokenizer):
     length = len(fasta)
+    transformer = transformer.eval()
+    tm_predicter = tm_predicter.eval()
     embedding = new_features(fasta, transformer, tokenizer)
     species = (species-30.44167)/(97.4167-30.44167)
     species_list = torch.from_numpy(np.array([species]*length))

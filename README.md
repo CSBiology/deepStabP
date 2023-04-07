@@ -96,10 +96,6 @@ FAVCNEFIMNKKDHISNESYDLVNYKPNSSFPVINHHRSQGAANSIEQHQFTDLHYSFGA
 KPRDLMHNYQNMY
 ```
 
-## Maximum length of a amino acid sequence
-
-This repository was built for the deepSTABp webservice. To ensure that the webservice does not get stuck on a single request a maximum length for a single amino acid sequence is enforced. This length is 10 000 amino acids. We advise you to run the docker local if you need to parse such a long protein. 
-
 
 
 
