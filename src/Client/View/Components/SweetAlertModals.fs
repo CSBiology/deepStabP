@@ -7,28 +7,6 @@ open Feliz.SweetAlert
 
 module private ResultModal_success =
 
-    open Fable.Core.JsInterop
-
-    let resultsToCsv (results: DeepStabP.Types.PredictorResponse list) =
-        results
-        |> List.map (fun x ->
-            $"{x.Protein},{x.MeltingTemp}{System.Environment.NewLine}"
-        )
-        |> String.concat ""
-
-    let downloadResults (filename: string) (filedata: string) =
-        let element = Browser.Dom.document.createElement("a");
-        element.setAttribute("href", "data:text/plain;charset=utf-8," +  Fable.Core.JS.encodeURIComponent(filedata));
-        element.setAttribute("download", filename);
-
-        element?style?display <- "None";
-        let _ = Browser.Dom.document.body.appendChild(element);
-
-        element.click();
-
-        Browser.Dom.document.body.removeChild(element) |> ignore
-        ()
-
     let body (model:State.Model) =
         Html.div [
             prop.style [
@@ -90,7 +68,7 @@ let private title (model:State.Model) =
     ]
 
 /// if more customization is needed one can fallback to ModalLogic
-let resultModal_success (model:State.Model) =
+let resultModal_success_fire (model:State.Model) =
     let isError = isError model
     [
         if not isError then swal.icon.success else swal.icon.error
@@ -103,15 +81,24 @@ let resultModal_success (model:State.Model) =
         swal.showConfirmButton true
         swal.confirmButtonText "Download as .csv"
         swal.reverseButtons true
-        swal.width (length.perc 70)
-        swal.preConfirm (fun _ ->
-            let fileName =
-                [
-                    System.DateTime.UtcNow.ToString("yyyyMMdd_hhmmss")
-                    "DeepStabP"
-                ] |> String.concat "_"
-            model.Results
-            |> resultsToCsv
-            |> downloadResults fileName
-        )
+        //swal.width (length.perc 70)
+        //swal.preConfirm (fun _ ->
+        //    true
+        //)
     ]
+
+let resultModal_success_update (model: State.Model) =
+    let isError = isError model
+    [
+        if not isError then swal.icon.success else swal.icon.error
+        swal.title (title model)
+        swal.html (body model)
+        swal.showCloseButton true
+        swal.showCancelButton true
+        swal.cancelButtonText "Close"
+        swal.cancelButtonColor "#E31B4C"
+        swal.showConfirmButton true
+        swal.confirmButtonText "Download as .csv"
+        swal.reverseButtons true
+    ]
+    

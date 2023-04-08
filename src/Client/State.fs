@@ -118,5 +118,4 @@ type Msg =
     /// Uses the current chunk index to determine if it should be looped
     | GetDataRequest            of {|ChunkIndex: int; Results: DeepStabP.Types.PredictorResponse list|}
     | GetDataRequestError       of exn
-    //| PredictionRequest                 of DeepStabP.Types.PredictorInfo
-    //| PredictionResponse                of Result<DeepStabP.Types.PredictorResponse [],exn>
+    | DownloadResults

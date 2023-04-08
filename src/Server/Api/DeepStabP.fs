@@ -24,7 +24,7 @@ let DeepStabP_url_v1 = Environment.deepStabP_url + "/api/v1"
 
 let httpClient = new HttpClient()
 httpClient.BaseAddress <- System.Uri(DeepStabP_url_v1)
-httpClient.Timeout <- System.TimeSpan(0,3,0)
+httpClient.Timeout <- System.TimeSpan(0,5,0)
 
 // Used to serialize Enum Unioncases as strings.
 let settings = JsonSerializerSettings()
