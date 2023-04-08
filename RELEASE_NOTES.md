@@ -1,3 +1,11 @@
+### 1.2.0+263433a (Released 2023-4-8)
+* Additions:
+    * [[#c447561](https://github.com/CSBiology/deepStabP/commit/c447561e7782c4707a9c5476367b1ebffab855ba)] Added missing string operation
+    * [[#e69f53e](https://github.com/CSBiology/deepStabP/commit/e69f53ea1e77b297202b08f9f6a8e59fbe62be56)] Merge branch 'main' of https://github.com/CSBiology/deepStabP
+    * [[#436d368](https://github.com/CSBiology/deepStabP/commit/436d36861ed2dcda1596714b0e14fc9118e52572)] Edited readme, set models to eval
+* Bugfixes:
+    * [[#263433a](https://github.com/CSBiology/deepStabP/commit/263433a602d6511e9b38857b43bc1c33f486b994)] fix download bug :bug:
+
 ### 1.1.0+5dac89c (Released 2023-4-7)
 
 ### 1.0.0+5dac89c (Released 2023-4-7)

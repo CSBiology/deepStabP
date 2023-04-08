@@ -15,27 +15,38 @@ let private replaceLetters (str:string) =
         | _ -> string c
     )
 
+let addWhiteSpaceInBetween (str: string) =
+    let mutable isFirst = true
+    let sb = System.Text.StringBuilder()
+    for c in str do
+        if isFirst then 
+            isFirst <- false
+        else
+            sb.Append(" ") |> ignore
+        sb.Append(c) |> ignore
+    sb.ToString()
+
 let private read (reader:TextReader) =
     let mutable noNameIterator = 0
     let mutable iterator = 0
     let rec readRecords (acc: FastaRecord list) (currentHeader: string) (currentSeq: string) =
         let nextLine = reader.ReadLine()
         match nextLine with
-        | null | _ when (iterator >= maxCount) || (isNull nextLine) -> List.rev ({ header = currentHeader; sequence = currentSeq } :: acc)
+        | null | _ when (iterator >= maxCount) || (isNull nextLine) -> List.rev ({ header = currentHeader; sequence = addWhiteSpaceInBetween currentSeq } :: acc)
         | line when line.StartsWith(">!") ->
             iterator <- iterator + 1
             noNameIterator <- noNameIterator + 1
             let newHeader = sprintf "Unknown%i" noNameIterator
             let line' = line.Substring(2).Trim() |> replaceLetters
             if currentHeader <> "" && currentSeq <> "" then
-                readRecords ({ header = currentHeader; sequence = currentSeq } :: acc) newHeader line'
+                readRecords ({ header = currentHeader; sequence = addWhiteSpaceInBetween currentSeq } :: acc) newHeader line'
             else
                 readRecords acc newHeader line'
         | line when line.StartsWith(">") ->
             let newHeader = line.Substring(1)
             iterator <- iterator + 1
             if currentHeader <> "" && currentSeq <> "" then
-                readRecords ({ header = currentHeader; sequence = currentSeq } :: acc) newHeader ""
+                readRecords ({ header = currentHeader; sequence = addWhiteSpaceInBetween currentSeq } :: acc) newHeader ""
             else
                 readRecords acc newHeader ""
         | line ->

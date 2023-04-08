@@ -81,10 +81,6 @@ let resultModal_success_fire (model:State.Model) =
         swal.showConfirmButton true
         swal.confirmButtonText "Download as .csv"
         swal.reverseButtons true
-        //swal.width (length.perc 70)
-        //swal.preConfirm (fun _ ->
-        //    true
-        //)
     ]
 
 let resultModal_success_update (model: State.Model) =

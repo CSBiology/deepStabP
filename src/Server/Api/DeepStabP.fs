@@ -39,17 +39,6 @@ let helloWorldHandler () =
     }
     |> Async.AwaitTask
 
-open DeepStabP.Types
-
-let replaceLetters (str:string) = 
-    str
-    |> String.collect (fun c -> 
-        match c with
-        | '3' | '5' |'0' -> "X"
-        | '\n' | '\t' | ' ' -> ""
-        | _ -> string c
-    )
-
 let postDataBytesHandler (prop:Shared.PostDataBytes) = async {
     let countChunks =
         FastaRecord.ofFile prop.data // parse data to fasta
