@@ -15,7 +15,10 @@ def new_features (fasta_record, model, tokenizer):
     device = torch.device('cpu')
     model = model.to(device)
     for x,fasta in enumerate(fasta_record):
-        ids = tokenizer.batch_encode_plus(str(fasta.sequence), add_special_tokens=True, padding=True)
+        sequence = list (str(fasta.sequence))
+        sequence = ' '.join (sequence)
+        sequence = [sequence]
+        ids = tokenizer.batch_encode_plus(sequence, add_special_tokens=True, padding=True)
         input_ids = torch.tensor(ids['input_ids']).to(device)
         attention_mask = torch.tensor(ids['attention_mask']).to(device)
         with torch.no_grad():
