@@ -70,6 +70,7 @@ let private title (model:State.Model) =
 /// if more customization is needed one can fallback to ModalLogic
 let resultModal_success_fire (model:State.Model) =
     let isError = isError model
+    let hasResults = List.isEmpty model.Results |> not
     [
         if not isError then swal.icon.success else swal.icon.error
         swal.title (title model)
@@ -78,7 +79,7 @@ let resultModal_success_fire (model:State.Model) =
         swal.showCancelButton true
         swal.cancelButtonText "Close"
         swal.cancelButtonColor "#E31B4C"
-        swal.showConfirmButton true
+        swal.showConfirmButton hasResults
         swal.confirmButtonText "Download as .csv"
         swal.reverseButtons true
     ]
