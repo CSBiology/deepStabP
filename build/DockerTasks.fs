@@ -55,7 +55,7 @@ let dockerPublish = BuildTask.createFn "DockerPublish" [] (fun config ->
     match check.ToLower() with
     | "y" | "yes" | "true" ->
         let r = ProjectInfo.release
-        let api_semver = {|Major = "1"; Minor = "0"; Patch = "0"|}
+        let api_semver = {|Major = "1"; Minor = "1"; Patch = "0"|}
         let dockerTagImage() =
             // tag api
             run docker $"tag {ImageName_api}:latest {ImageName_api_remote}:{api_semver.Major}.{api_semver.Minor}.{api_semver.Patch}" ""

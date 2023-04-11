@@ -1,5 +1,12 @@
-### 1.2.0+263433a (Released 2023-4-8)
+### 1.2.1+656fbf3 (Released 2023-4-11)
 * Additions:
+    * [[#484e599](https://github.com/CSBiology/deepStabP/commit/484e59906a37c8ce47fd54127d30790ff1e665e3)] Update google search description
+    * [[#558f527](https://github.com/CSBiology/deepStabP/commit/558f52715892c4a2600b009228756861abf70ea7)] Change result file extensions to .csv
+    * [[#656fbf3](https://github.com/CSBiology/deepStabP/commit/656fbf3cb63deda5d7ff468c3d997f0e9bc7777d)] Only show "download" option when results exist.
+
+### 1.2.0+b72a68c (Released 2023-4-8)
+* Additions:
+    * [[#b72a68c](https://github.com/CSBiology/deepStabP/commit/b72a68c8eb9ba94d576ffb4ab5b954ad7ba75dae)] Move string string + whitespace to dotnet backend
     * [[#c447561](https://github.com/CSBiology/deepStabP/commit/c447561e7782c4707a9c5476367b1ebffab855ba)] Added missing string operation
     * [[#e69f53e](https://github.com/CSBiology/deepStabP/commit/e69f53ea1e77b297202b08f9f6a8e59fbe62be56)] Merge branch 'main' of https://github.com/CSBiology/deepStabP
     * [[#436d368](https://github.com/CSBiology/deepStabP/commit/436d36861ed2dcda1596714b0e14fc9118e52572)] Edited readme, set models to eval
