@@ -31,7 +31,7 @@ module private ResultDownload =
 
     let downloadResults (filename: string) (filedata: string) =
         let element = Browser.Dom.document.createElement("a");
-        element.setAttribute("href", "data:text/plain;charset=utf-8," +  Fable.Core.JS.encodeURIComponent(filedata));
+        element.setAttribute("href", "data:text/csv;charset=utf-8," +  Fable.Core.JS.encodeURIComponent(filedata));
         element.setAttribute("download", filename);
 
         element?style?display <- "None";
