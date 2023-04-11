@@ -18,6 +18,7 @@ module MT_Mode =
         
 /// Metadata for storage with all information for session
 type ProcessMetadata = {
+    DateCreation: System.DateTime
     Session: System.Guid
     MT_Mode: MT_Mode
     Growth_Temp: float
@@ -26,6 +27,7 @@ type ProcessMetadata = {
     ChunkCount: int
 } with
     static member init (id: System.Guid, mt_mode, growth_temp) = {
+        DateCreation= System.DateTime.UtcNow
         Session     = id
         MT_Mode     = mt_mode
         Growth_Temp = growth_temp
