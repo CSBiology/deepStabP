@@ -1,3 +1,7 @@
+### 1.2.2+c401c9e (Released 2023-4-11)
+* Deletions:
+    * [[#c401c9e](https://github.com/CSBiology/deepStabP/commit/c401c9e0130fbb535c14e02d1aa16671ec69f0e5)] Add failsafe to remove abandoned tasks
+
 ### 1.2.1+656fbf3 (Released 2023-4-11)
 * Additions:
     * [[#484e599](https://github.com/CSBiology/deepStabP/commit/484e59906a37c8ce47fd54127d30790ff1e665e3)] Update google search description
