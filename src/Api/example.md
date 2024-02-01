@@ -41,6 +41,10 @@ Here you can find the fasta example strings used in the deepstabp frontend UI: h
 let SingleFastaMinimal = """>ExampleName
 MAQYHQQHEMKQTMAETQYVTAPPPMGYPVMMKDSPQTVQPPHEGQSKGSGGFLRGCLAAMCCCCVLDCVF"""
 
+sequence = "MAQYHQQHEMKQTMAETQYVTAPPPMGYPVMMKDSPQTVQPPHEGQSKGSGGFLRGCLAAMCCCCVLDCVF"
+
+seq_transform = " ".join(sequence)
+
 fasta_record_1 = FastaRecord(header="ExampleName", sequence="MAQYHQQHEMKQTMAETQYVTAPPPMGYPVMMKDSPQTVQPPHEGQSKGSGGFLRGCLAAMCCCCVLDCVF")
 
 predictor_info = PredictorInfo(
